@@ -73,6 +73,9 @@ export class UsbReader extends EventEmitter {
       const buffer = await device.transferIn();
       this.emit(UsbReaderEvent.data, buffer);
     } catch (error) {
+      if (!this.running) {
+        return;
+      }
       if (error instanceof Error && this.isUsbTimeoutError(error)) {
         this.logger.debug('Read has timeouted');
         return;

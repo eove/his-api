@@ -145,6 +145,22 @@ describe('Usb reader', () => {
       await wait(200);
       expect(events).toEqual([[UsbReaderEvent.data, Buffer.from([1])]]);
     });
+
+    it("won't call error callback on error", async () => {
+      createUsbReader();
+      const device = new UsbDeviceMock();
+      device.transferIn = jest.fn().mockImplementation(async () => {
+        await wait(100);
+        throw new Error('bleh');
+      });
+      reader.start(device);
+      await wait(50);
+
+      reader.pause();
+
+      await wait(100);
+      expect(events).toEqual([]);
+    });
   });
 
   describe('while started then paused and finally resumed', () => {

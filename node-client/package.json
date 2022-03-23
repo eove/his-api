@@ -16,7 +16,7 @@
   ],
   "scripts": {
     "start": "ts-node ./examples/connect",
-    "prettier": "prettier --write --ignore-path ../../.prettierignore '**/*.{js,ts,json,md,yml}'",
+    "prettier": "prettier --write '**/*.{js,ts,json,md,yml}'",
     "lint": "eslint . --fix --ext .ts --max-warnings 0",
     "jest": "jest --verbose",
     "testw": "jest --watch",
