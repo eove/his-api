@@ -3,8 +3,9 @@ import { mock } from './mock';
 
 export const UsbDeviceMock = mock<UsbDevice>(() => ({
   open: jest.fn().mockResolvedValue(undefined),
+  claimInterface: jest.fn().mockResolvedValue(undefined),
   close: jest.fn().mockResolvedValue(undefined),
-  timeout: 0,
+  setTimeouts: jest.fn(),
   vendorId: 0,
   productId: 0,
   transferOut: jest.fn().mockResolvedValue(undefined),

@@ -51,15 +51,21 @@ export class NodeUsbDevice implements UsbDevice {
     await this.device.open();
   }
 
-  set timeouts(timeouts: UsbTimeouts) {
+  async claimInterface(interfaceNumber: number): Promise<void> {
+    this.logger.debug(`Claiming interface ${interfaceNumber}`);
+    await this.device.claimInterface(0);
+  }
+
+  setTimeouts(timeouts: UsbTimeouts, interfaceNumber: number): void {
     const { in: inValue, out: outValue } = timeouts;
     this.logger.debug(
-      `Setting device timeouts (in: ${inValue}, out: ${outValue})`
+      `Setting device timeouts (in: ${inValue}, out: ${outValue}, interface ${interfaceNumber})`
     );
-    for (const int of (this.device as any).device.interfaces) {
-      for (const endpoint of int.endpoints) {
-        endpoint.timeout = endpoint.direction === 'out' ? outValue : inValue;
-      }
+    const theInterface = (this.device as any).device.interfaces[
+      interfaceNumber
+    ];
+    for (const endpoint of theInterface.endpoints) {
+      endpoint.timeout = endpoint.direction === 'out' ? outValue : inValue;
     }
   }
 

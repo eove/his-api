@@ -1,6 +1,11 @@
 import { EventEmitter } from 'events';
 
-import { ClientEventType, HisClient, HisClientCreation } from './hisClient';
+import {
+  accessoryInterfaceNumber,
+  ClientEventType,
+  HisClient,
+  HisClientCreation,
+} from './hisClient';
 import { mock, samples } from './tests';
 import { createSilentLogger, wait } from './tools';
 import {
@@ -149,14 +154,13 @@ describe('HIS client', () => {
   });
 
   describe('on connect', () => {
-    it('should configure and open device', async () => {
+    it('should open device', async () => {
       const device = mockToFindDeviceInAccessoryMode();
       createClient({ inTimeoutMs: 42, outTimeoutMs: 1337 });
 
       await client.connect();
 
       expect(device.open).toHaveBeenCalled();
-      expect(device.timeouts).toEqual({ in: 42, out: 1337 });
     });
 
     it('should emit a connected event', async () => {
@@ -191,6 +195,29 @@ describe('HIS client', () => {
       await client.connect();
 
       expect(accessoryModeConfigurator.configure).toHaveBeenCalledWith(device);
+    });
+
+    it('should set timeouts when device is in accessory mode', async () => {
+      const device = mockToFindDeviceInAccessoryMode();
+      createClient({ inTimeoutMs: 42, outTimeoutMs: 1337 });
+
+      await client.connect();
+
+      expect(device.setTimeouts).toHaveBeenCalledWith(
+        { in: 42, out: 1337 },
+        accessoryInterfaceNumber
+      );
+    });
+
+    it('should claim interface when device is in accessory mode', async () => {
+      const device = mockToFindDeviceInAccessoryMode();
+      createClient();
+
+      await client.connect();
+
+      expect(device.claimInterface).toHaveBeenCalledWith(
+        accessoryInterfaceNumber
+      );
     });
 
     it("won't put device in accessory mode if already in it", async () => {

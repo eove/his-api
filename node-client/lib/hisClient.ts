@@ -36,6 +36,8 @@ export enum ClientEventType {
   error = 'error',
 }
 
+export const accessoryInterfaceNumber = 0;
+
 export class HisClient extends EventEmitter {
   private readonly logger: Logger;
   private readonly deviceFinder: DeviceFinder;
@@ -136,7 +138,8 @@ export class HisClient extends EventEmitter {
     }
     const { device } = foundDevice;
     await device.open();
-    device.timeouts = this.timeouts;
+    await device.claimInterface(accessoryInterfaceNumber);
+    device.setTimeouts(this.timeouts, accessoryInterfaceNumber);
     this.device = device;
     this.usbReader.start(device);
     this.logger.info('Device is connected');

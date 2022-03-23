@@ -15,8 +15,9 @@ export interface UsbDevice {
   get productId(): number;
   get vendorId(): number;
   open(): Promise<void>;
+  claimInterface(interfaceNumber: number): Promise<void>;
   get opened(): boolean;
-  set timeouts(timeouts: UsbTimeouts);
+  setTimeouts(timeouts: UsbTimeouts, interfaceNumber: number): void;
   close(): Promise<void>;
   reset(): Promise<void>;
   transferOut(data: Buffer): Promise<void>;
