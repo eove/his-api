@@ -6,7 +6,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/eove/his-node-client",
+    "url": "https://github.com/eove/his-api",
     "directory": "node-client"
   },
   "main": "build/index.js",
