@@ -24,7 +24,8 @@
     "compile": "tsc",
     "prebuild": "rimraf build",
     "build": "tsc -p tsconfig.prod.json",
-    "build:all": "cd .. && npm run build"
+    "preversion": "run-s test build",
+    "postversion": "git push && git push --tags && npm publish"
   },
   "dependencies": {
     "usb": "2.0.3"
