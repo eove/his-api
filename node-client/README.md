@@ -16,7 +16,7 @@ npm install @eove/his-node-client --save
 const { createHisClient } = require('@eove/his-node-client');
 
 const client = createHisClient(/*...*/);
-client.on(ClientEventType.message, onMessage);
+client.on(ClientEventType.messageReceived, onMessageReceived);
 client.connect().then(/*...*/).catch(/*...*/);
 ```
 
@@ -56,7 +56,8 @@ HIS client is an event emitter and events are:
 
 - `connected`: we are connected to device in accessory mode
 - `disconnected`: we are disconnected from device
-- `message`: we have received a message (with a type and a payload maybe)
+- `messageReceived`: we have received a message (with a type and a payload maybe)
+- `messageSent`: we have sent a message (for debugging purpose)
 - `error`: on any error detected
 
 ## Subscribing to channels

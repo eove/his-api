@@ -32,7 +32,8 @@ export interface HisClientCreation {
 export enum ClientEventType {
   connected = 'connected',
   disconnected = 'disconnected',
-  message = 'message',
+  messageReceived = 'messageReceived',
+  messageSent = 'messageSent',
   error = 'error',
 }
 
@@ -114,7 +115,7 @@ export class HisClient extends EventEmitter {
   }
 
   private onMessageFromParser(message: Message): void {
-    this.emit(ClientEventType.message, message);
+    this.emit(ClientEventType.messageReceived, message);
     if (message.type == ServerMessageType.ping) {
       this.writeMessage({ type: ClientMessageType.pong });
     }
@@ -168,6 +169,7 @@ export class HisClient extends EventEmitter {
   }
 
   async writeMessage(message: Message): Promise<void> {
+    this.emit(ClientEventType.messageSent, message);
     return this.write(serializeMessage(message));
   }
 
