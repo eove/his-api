@@ -1,9 +1,10 @@
-name: '@eove/his-node-client ci'
+name: "@eove/his-node-client ci"
 
 on:
   push:
     paths:
       - "node-client/**"
+      - ".github/workflows/node_client_ci.yml"
 
 defaults:
   run:
