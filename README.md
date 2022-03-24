@@ -1,6 +1,6 @@
 # HIS API
 
-Documentation, clients or examples to connect to HIS (Hospital Information System) features on Eove devices
+Documentation, clients or examples to connect to HIS (Hospital Information System) features on [Eove](https://eove.fr) devices
 
 ## Node.JS client
 
