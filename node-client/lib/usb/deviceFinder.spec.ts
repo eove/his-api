@@ -85,13 +85,24 @@ describe('Device finder', () => {
       expect(found).toMatchObject({ inAccessoryMode: true });
     });
 
-    it('could find no device at all', async () => {
+    it('should throw when no device can be found', () => {
       findUsbDevice = jest.fn().mockResolvedValue(undefined);
       createDeviceFinder();
 
-      const found = await finder.find();
+      const act = finder.find();
 
-      expect(found).toBeUndefined();
+      return expect(act).rejects.toThrow('No device found');
+    });
+
+    it('should throw providing serial number if any when no device can be found', () => {
+      findUsbDevice = jest.fn().mockResolvedValue(undefined);
+      createDeviceFinder({ serialNumber: 'x24' });
+
+      const act = finder.find();
+
+      return expect(act).rejects.toThrow(
+        'No device found for serial number x24'
+      );
     });
   });
 
@@ -118,7 +129,28 @@ describe('Device finder', () => {
       expect(found).toMatchObject({ device: deviceInAccessoryMode });
     });
 
-    it('should return no device when cannot be found in time', async () => {
+    it('should wait the provided delay though device might disappear during the process', async () => {
+      const deviceInAccessoryMode = samples.createDeviceInAccessoryMode();
+      let inAccessoryMode = false;
+      setTimeout(() => {
+        inAccessoryMode = true;
+      }, 150);
+      findUsbDevice = jest
+        .fn()
+        .mockImplementation(() =>
+          Promise.resolve(inAccessoryMode ? deviceInAccessoryMode : undefined)
+        );
+      createDeviceFinder({
+        pollingDelayMs: 100,
+        timeoutMs: 500,
+      });
+
+      const found = await finder.waitForDeviceInAccessoryMode();
+
+      expect(found).toMatchObject({ device: deviceInAccessoryMode });
+    });
+
+    it('should throw when no device can be found in time', () => {
       const device = samples.createDevice();
       const deviceInAccessoryMode = samples.createDeviceInAccessoryMode();
       let inAccessoryMode = false;
@@ -135,9 +167,34 @@ describe('Device finder', () => {
         timeoutMs: 200,
       });
 
-      const found = await finder.waitForDeviceInAccessoryMode();
+      const act = finder.waitForDeviceInAccessoryMode();
 
-      expect(found).toBeUndefined();
+      return expect(act).rejects.toThrow('No device in accessory mode found');
+    });
+
+    it('should throw providing serial number if any when no device can be found', () => {
+      const device = samples.createDevice();
+      const deviceInAccessoryMode = samples.createDeviceInAccessoryMode();
+      let inAccessoryMode = false;
+      setTimeout(() => {
+        inAccessoryMode = true;
+      }, 300);
+      findUsbDevice = jest
+        .fn()
+        .mockImplementation(() =>
+          Promise.resolve(inAccessoryMode ? deviceInAccessoryMode : device)
+        );
+      createDeviceFinder({
+        serialNumber: 'x24',
+        pollingDelayMs: 50,
+        timeoutMs: 200,
+      });
+
+      const act = finder.waitForDeviceInAccessoryMode();
+
+      return expect(act).rejects.toThrow(
+        'No device in accessory mode found for serial number x24'
+      );
     });
   });
 

@@ -228,22 +228,6 @@ describe('HIS client', () => {
 
       expect(accessoryModeConfigurator.configure).not.toHaveBeenCalled();
     });
-
-    it('should rejects when device in accessory mode cannot be found', async () => {
-      deviceFinder.find = jest
-        .fn()
-        .mockResolvedValue(samples.createFoundDevice());
-      deviceFinder.waitForDeviceInAccessoryMode = jest
-        .fn()
-        .mockResolvedValue(undefined);
-      createClient();
-
-      const act = () => client.connect();
-
-      return expect(act).rejects.toThrow(
-        new Error('No device in accessory mode found')
-      );
-    });
   });
 
   describe('on reset', () => {

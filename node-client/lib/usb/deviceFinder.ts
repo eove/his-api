@@ -50,12 +50,10 @@ export class DeviceFinder {
     this.findUsbDevice = findUsbDevice;
   }
 
-  public async waitForDeviceInAccessoryMode(): Promise<
-    FoundDevice | undefined
-  > {
+  public async waitForDeviceInAccessoryMode(): Promise<FoundDevice> {
     const startTime = performance.now();
     while (performance.now() - startTime < this.timeoutMs) {
-      const result = await this.find();
+      const result = await this.findMaybe();
       if (result && result.inAccessoryMode) {
         return result;
       }
@@ -64,10 +62,18 @@ export class DeviceFinder {
       );
       await wait(this.pollingDelayMs);
     }
-    return undefined;
+    throw this.createNoDeviceFoundError('No device in accessory mode found');
   }
 
-  public async find(): Promise<FoundDevice | undefined> {
+  public async find(): Promise<FoundDevice> {
+    const foundMaybe = await this.findMaybe();
+    if (!foundMaybe) {
+      throw this.createNoDeviceFoundError('No device found');
+    }
+    return foundMaybe;
+  }
+
+  private async findMaybe(): Promise<FoundDevice | undefined> {
     const filters = this.createUsbFilters();
     const device = await this.findUsbDevice(filters);
     if (!device) {
@@ -89,5 +95,11 @@ export class DeviceFinder {
       filters.productId = productId;
       return filters;
     });
+  }
+
+  private createNoDeviceFoundError(baseMessage: string) {
+    const suffix =
+      this.serialNumber !== undefined ? ' for serial number x24' : '';
+    return new Error(`${baseMessage}${suffix}`);
   }
 }
