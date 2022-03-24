@@ -99,7 +99,9 @@ export class DeviceFinder {
 
   private createNoDeviceFoundError(baseMessage: string) {
     const suffix =
-      this.serialNumber !== undefined ? ' for serial number x24' : '';
+      this.serialNumber !== undefined
+        ? ` for serial number ${this.serialNumber}`
+        : '';
     return new Error(`${baseMessage}${suffix}`);
   }
 }
