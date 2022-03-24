@@ -21,7 +21,7 @@ jobs:
       - name: release body
         run: |
           npm install -g @eove/dev-tools@1
-          eo-dev-tools version --markdown > /tmp/release_body.md
+          eo-dev-tools version --root node-client --markdown > /tmp/release_body.md
           eo-dev-tools changelog --omit-title ${{ github.ref_name }} >> /tmp/release_body.md
 
       - uses: ncipollo/release-action@v1

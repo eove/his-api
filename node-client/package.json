@@ -9,6 +9,10 @@
     "url": "https://github.com/eove/his-api",
     "directory": "node-client"
   },
+  "bugs": {
+    "url": "https://github.com/router5/examples/issues"
+  },
+  "homepage": "https://github.com/eove/his-api/tree/master/node-client#readme",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "files": [
