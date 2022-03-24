@@ -134,9 +134,6 @@ export class HisClient extends EventEmitter {
     await this.putDeviceInAccessoryModeIfNeeded();
 
     const foundDevice = await this.deviceFinder.waitForDeviceInAccessoryMode();
-    if (!foundDevice) {
-      throw new Error('No device in accessory mode found');
-    }
     const { device } = foundDevice;
     await device.open();
     await device.claimInterface(accessoryInterfaceNumber);
@@ -153,9 +150,6 @@ export class HisClient extends EventEmitter {
       throw new Error('Cannot reset when connected');
     }
     const foundDevice = await this.deviceFinder.find();
-    if (!foundDevice) {
-      throw new Error('No device found');
-    }
     const { device } = foundDevice;
     await device.open();
     await device.reset();
@@ -190,11 +184,8 @@ export class HisClient extends EventEmitter {
   }
 
   private async putDeviceInAccessoryModeIfNeeded(): Promise<void> {
-    const foundDeviceMaybe = await this.deviceFinder.find();
-    if (!foundDeviceMaybe) {
-      throw new Error('No device found');
-    }
-    const { device, inAccessoryMode } = foundDeviceMaybe;
+    const foundDevice = await this.deviceFinder.find();
+    const { device, inAccessoryMode } = foundDevice;
     if (inAccessoryMode) {
       return;
     }
