@@ -1,6 +1,9 @@
 import { createHisClient } from '../lib';
 
-main().catch(console.error);
+main().catch((error) => {
+  console.error(error.message);
+  process.exit(1);
+});
 
 async function main(): Promise<void> {
   const client = createHisClient({
