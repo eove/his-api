@@ -28,8 +28,7 @@
     "compile": "tsc",
     "prebuild": "rimraf build",
     "build": "tsc -p tsconfig.prod.json",
-    "createfakegitdir": "mkdir -p .git",
-    "preversion": "run-s test build createfakegitdir",
+    "preversion": "run-s test build",
     "postversion": "git push && git push --tags && npm publish"
   },
   "dependencies": {

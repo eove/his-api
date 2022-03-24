@@ -69,3 +69,21 @@ Available channels are:
 - `settings`: to receive settings updates for current ventilation mode
 - `alarms`: to receive alarms activations/deactivations
 - `ventilation`: to receive ventilation related information and updates
+
+## For contributors
+
+### Publishing
+
+Package is published on both public npm registry and Eove private one hosted by Github.
+
+Warning: you must have a fake and empty `.git` directory in `node-client` directory.
+There is a limitation in `npm version` script: https://github.com/npm/npm/issues/9111.
+
+Just use `npm version` with something like `major` or specific version like `1.0.2`.
+A commit/tag will be created and pushed on github then artifact will be published on npm registry.
+
+Then you should publish the exact same version on Eove private registry with:
+
+```
+npm_config_registry=https://npm.pkg.github.com/eove npm publish
+```
