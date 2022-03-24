@@ -1,5 +1,7 @@
 # @eove/his-node-client
 
+[![node-client ci](https://github.com/eove/his-api/actions/workflows/node_client_ci.yml/badge.svg)](https://github.com/eove/his-api/actions/workflows/node_client_ci.yml)
+
 Node.JS client to connect to an Eove device exposing HIS features
 
 ## Installation

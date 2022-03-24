@@ -1,4 +1,4 @@
-name: node-client ci
+name: @eove/his-node-client ci
 
 on:
   push:
