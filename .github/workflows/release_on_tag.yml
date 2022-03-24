@@ -1,0 +1,32 @@
+name: Release on tag
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+-?*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14.19'
+
+      - name: release body
+        run: |
+          npm install -g @eove/dev-tools@1
+          eo-dev-tools version --markdown > /tmp/release_body.md
+          eo-dev-tools changelog --omit-title ${{ github.ref_name }} >> /tmp/release_body.md
+
+      - uses: ncipollo/release-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          bodyFile: /tmp/release_body.md
+          allowUpdates: true
