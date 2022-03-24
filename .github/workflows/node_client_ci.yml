@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    paths:
+      - "node-client/**"
+
+defaults:
+  run:
+    working-directory: node-client
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "14.19"
+
+      - run: npm install
+      - run: npm test
