@@ -2,7 +2,7 @@
 
 ## Foreword
 
-To ease the monitoring of several devices in a hospital environment, a way to collect and gather each device data is required.
+To ease the monitoring of several devices in a hospital environment, a way to collect and gather each device data are required.
 The goal is to provide a dashboard to nurses, and avoid the need to physically move to patients room to check ventilation status.
 As a ventilation device manufacturer, EOVE provides an interface on its devices to export live data.
 It does not deal with the display of these data to nurses.
@@ -13,7 +13,8 @@ The function is available for EOVE-150 products running at least EOVE-150 applic
 
 It uses a wired connection which requires a USB 2.0 cable with a micro USB plug.
 
-As an EOVE-150 product is made of two components : a ventilation module and a docking station, the data from the ventilation module will be available only if :
+An EOVE-150 product is made of two components: a ventilation module and a docking station running Android OS.
+This means the data from the ventilation module will only be available if:
 
 - the ventilation module is turned ON
 - the ventilation module is inserted in the docking station
@@ -34,11 +35,11 @@ The EOVE-150 application acts as a server that responds to client sollicitations
 
 ## Reference implementation
 
-EOVE provides a reference implementation that includes a [Node.JS client](https://github.com/eove/his-api/tree/master/node-client).
+EOVE provides a reference implementation that includes a [Node.JS client](https://github.com/eove/his-API/tree/master/node-client).
 
 This client is able to perform all the steps needed in order to retrieve live data from a running ventialtion device.
 
-The main steps a client must perform are :
+The main steps a client must perform are:
 
 - trigger the accessory mode on the EO150 station
 - write message to start a high level communication
@@ -53,24 +54,120 @@ Data exchanged over USB link are JSON strings separated by a new line character 
 Example of such string before UTF-8 encoding:
 
 ```
-{"type":"START_COMMUNICATION"}\n
+{"type":"DO_SOMETHING"}\n
 ```
 
-Client sends messages and get replies.
+Client can either send or receive such messages.
 
 ## Plumbing
 
 ### Accessory mode
 
-- prerequisite : usb cable plugged on micro USB port
+As a prerequisite, USB cable must be plugged on micro USB port.
 
 Trigger Accessory Mode according to https://source.android.com/devices/accessories/aoa.
 
-Reference implementation in `his-api/node-client/lib/usb/accessoryModeConfigurator.ts`.
+Reference implementation in [accessoryModeConfigurator.ts](https://github.com/eove/his-API/blob/master/node-client/lib/usb/accessoryModeConfigurator.ts).
 
-### Communication start
+In summary steps are:
 
-- prerequisite : accessory mode triggered
+- find Android device based on usual Android USB ids
+- send a control transfer in request to validate version code
+- send multiple control transfer out requests with accessory information
+- send a control transfer out request to put Android device in accessory mode
+
+Note that an Android device stays in accessory mode, there is no command to put it in default mode back.
+
+The device leaves this mode automatically when:
+
+- USB cable is unplugged
+- USB is reset on accessory side
+- Android device reboots
+
+Also note that only one accessory can be connected to an Android device.
+This means you cannot connect two clients to the same server.
+
+### Communication ping/pong mechanism
+
+To keep the connection alive, pings are emitted periodicaly by the server (typically every 8s).
+The client shall reply with special [pongs messages](#pong-command) before the timeout (typically 5s).
+
+Client reads:
+
+```json
+{
+  "type": "PING"
+}
+```
+
+Client writes:
+
+```json
+{
+  "type": "PONG"
+}
+```
+
+When client fails to send a pong message, server will consider client as disconnected.
+This means that client will have to enable [high level communication](#high-level-communication) again.
+
+### Data format
+
+When decoded and delimited, messages are JSON-valid strings.
+In other words every used types are compatible with JSON (number, string, array, etc.).
+
+Dates (with time component) are converted to epoch with a millisecond precision.
+
+## Client messages
+
+Client can send message to server and these messages are mostly commands.
+This means message type will be an order like `DO_SOMETHING` or `GET_ME_SOMETHING`.
+
+Commands will often receive a positive response message like `DO_SOMETHING_SUCCEEDED`.
+
+`DO_SOMETHING` or `GET_ME_SOMETHING` are not valid commands but are used in several examples because they are concise enough.
+
+A message has the following simplified type:
+
+```ts
+interface Message {
+  type: string;
+  reference?: string;
+  payload?: any;
+}
+```
+
+### High level communication
+
+By default server will ignore any message coming from client because high level communication is disabled.
+Client should send a [START_COMMUNICATION](#startcommunication-command) command to enable it.
+
+### Using a reference
+
+An optional `reference` field is available to help the client link messages and replies.
+The server returns the `reference` field provided unchanged in its replies.
+
+Client writes:
+
+```json
+{
+  "type": "GET_SOMETHING",
+  "reference": "1"
+}
+```
+
+As a response, client reads:
+
+```json
+{
+  "type": "GET_SOMETHING_SUCCEEDED",
+  "reference": "1"
+}
+```
+
+### START_COMMUNICATION command
+
+This command must be the first one because it enables high level communication with server.
 
 Client writes:
 
@@ -80,57 +177,99 @@ Client writes:
 }
 ```
 
-Upon success, client reads:
-
-```json
-{
-  "type": "START_COMMUNICATION_SUCCEEDED"
-}
-```
-
-### Communication ping
-
-To keep the connection alive, pings are emitted periodicaly by the server (typically every 8s).
-The client shall reply with pongs messages before the timeout (typically 5s).
-
 Client reads:
-
-```json
-{ "type": "PING" }
-```
-
-Client writes:
-
-```json
-{ "type": "PONG" }
-```
-
-### Reference
-
-An optional `reference` field is available to help the client link messages and replies.
-The server returns the `reference` field provided unchanged in its replies.
-
-Client writes:
-
-```json
-{
-  "type": "START_COMMUNICATION",
-  "reference": "1"
-}
-```
-
-As a response, client reads:
 
 ```json
 {
   "type": "START_COMMUNICATION_SUCCEEDED",
-  "reference": "1"
+  "payload": {
+    "apiVersion": "1.0.0"
+  }
 }
 ```
 
-## Identification data
+The succeeded response includes the HIS server API version.
 
-- prerequisite : communication started
+### STOP_COMMUNICATION command
+
+This command will properly stop high level communication with server.
+
+Client writes:
+
+```json
+{
+  "type": "STOP_COMMUNICATION"
+}
+```
+
+Client reads:
+
+```json
+{
+  "type": "STOP_COMMUNICATION_SUCCEEDED"
+}
+```
+
+No other command will be processed by server except another start communication one.
+
+### PONG command
+
+Client writes:
+
+```json
+{
+  "type": "PONG"
+}
+```
+
+This message won't receive a corresponding response but another ping message will follow.
+
+### SUBSCRIBE command
+
+Client can subscribe to various channels to receive data in real time.
+
+Example for a waveforms subscription:
+
+```json
+{
+  "type": "SUBSCRIBE",
+  "payload": ["waveforms"]
+}
+```
+
+Upon success, client receives:
+
+```json
+{
+  "type": "SUBSCRIBE_SUCCEEDED"
+}
+```
+
+When client subscribes with multiple commands he or she will be subscribed to all provided channels without any duplications.
+In other word client may subscribe to `waveforms` and then `waveforms` plus `monitorings`, he will receive waveforms messages only once.
+
+### UNSUBSCRIBE command
+
+Example for a waveforms unsubscription:
+
+```json
+{
+  "type": "UNSUBSCRIBE",
+  "payload": ["waveforms"]
+}
+```
+
+Upon success, client receives:
+
+```json
+{
+  "type": "UNSUBSCRIBE_SUCCEEDED"
+}
+```
+
+Client might subscribe to a given channel multiple times but when he or she unsubscribes from it, he or she will be totally unsubscribed.
+
+### GET_INFORMATION command
 
 Client sends:
 
@@ -158,6 +297,7 @@ Client reads:
     },
     "station": {
       "type": "eodisplay",
+      "serialNumber": "ee803ca3071839d4",
       "applicationVersion": "3.2.0-dev.3",
       "systemVersion": "eove-eodisplay-2.2.1",
       "bootloaderVersion": "2017.12.0-EOVE_v1.2.2-g598a8e923"
@@ -166,39 +306,34 @@ Client reads:
 }
 ```
 
+Such payload can be read as follows:
+
+> You are connected to an USB device with serial number ee803ca3071839d4 which appear to be an EOVE-150 product with a compatible ventilation module inserted into its station.
+
 Note: ventilation module data are available only if the ventilation module is turned ON and inserted in the docking station.
 
-## Ventilation data
+## Channel subscription
 
-The ventilation data are provided through subscription to channels.
+The ventilation data are provided in near real time through subscription to channels.
 
-The client sends `SUBSCRIBE` or `UNSUBSCRIBE` commands for a given channel.
+The client sends `SUBSCRIBE` or `UNSUBSCRIBE` commands for one or multiple channels.
 
 Available channels are:
 
-- `waveforms`: to receive a batch of waveforms
-- `monitorings`: to receive monitorings updates
-- `settings`: to receive settings updates for current ventilation mode
-- `alarms`: to receive alarms activations/deactivations
-- `ventilation`: to receive ventilation related information and updates
+- [waveforms](#waveforms-channel): to receive a batch of waveforms
+- [monitorings](#monitorings-channel): to receive monitorings updates
+- [settings](#monitorings-channel): to receive settings updates for current ventilation mode
+- [alarms](#alarms-channel): to receive alarms activations/deactivations
+- [ventilation](#ventilation-channel): to receive ventilation related information and updates
 
-The response to a subscription is an initial `snapshot`, followed by `patches` to update the data.
+The response to a subscription is typically an initial snapshot, followed by incremental patches to update the data.
 
-When ventilaton module reconnects a snapshot is sent before any patch.
-Client can then replace all the state he or she has built so far.
+When ventilaton module reconnects a snapshot is usually sent before any patch.
+Client can then replace all the state he or she has built so far by this new snapshot.
 
-Snapshot/patch payloads include `newborn` information when patient type is pediatric.
-When patient type becomes adult, `newborn` information is set to `UNAVAILABLE` in patch's payload.
-Generally speaking any information missing from previous state in current state is set to `UNAVAILABLE` in patch's payload.
-This is a way to represent the absence of information in a incremental update.
+### Waveforms channel
 
-### Waveforms
-
-- prerequisite : communication started
-
-#### Subscription
-
-Client sends:
+Subscription example:
 
 ```json
 {
@@ -207,18 +342,13 @@ Client sends:
 }
 ```
 
-Upon success, clients receives:
-
-```json
-{ "type": "SUBSCRIBE_SUCCEEDED" }
-```
-
-#### Data
+#### WAVEFORMS message
 
 Waveforms can be built from a stream of samples that contain timestamp, pressure, flow, and volume.
-A sample is a table with this format : `[number (epoch ms), number, number, number]`.
 
-For compacity and performance, samples are grouped in 12-sample chunks such as :
+A sample is a table with this format: `[number (epoch ms), number (pressure), number (flow), number (volume)]`.
+
+For compacity and performance, samples are grouped in 12-sample chunks such as:
 
 ```json
 {
@@ -242,15 +372,25 @@ For compacity and performance, samples are grouped in 12-sample chunks such as :
 
 A sample is taken every 80 ms (or 40 ms for newborn patients) by the ventilation module, which results in 12-samples chunks emitted every 960 ms (or 480 ms for newborn patients) from the station.
 
-- `WAVEFORMS_UNAVAILABLE`: message sent when waveforms cannot be read due to a missing ventilation module
+Waveforms have no snapshot/patch distinction because we send all components every time (pressure, flow, etc.).
 
-Waveforms have no snapshot/patch distinction because we send all components every time (volume, flow, etc.).
+#### WAVEFORMS_UNAVAILABLE message
 
-### Monitorings
+Such message is sent when waveforms cannot be read due to a missing ventilation module.
+
+Client receives:
+
+```json
+{
+  "type": "WAVEFORMS_UNAVAILABLE"
+}
+```
+
+### Monitorings channel
 
 #### Subscription
 
-Client sends:
+Example:
 
 ```json
 {
@@ -259,15 +399,9 @@ Client sends:
 }
 ```
 
-Upon success, clients receives:
+#### MONITORINGS_SNAPSHOT message
 
-```json
-{ "type": "SUBSCRIBE_SUCCEEDED" }
-```
-
-#### Received data
-
-At first, all data is new, so the first message contains all values. Further messages will only hold updates.
+At first, all data are new, so the first message contains all values.
 
 First message:
 
@@ -296,6 +430,12 @@ First message:
 }
 ```
 
+Most values are numbers or `null` (e.g. when sensor is unavailable or ventilation is stopped).
+
+#### MONITORINGS_PATCH message
+
+After a snapshot, further messages will only hold updates.
+
 Second message, with only one value to be updated:
 
 ```json
@@ -319,15 +459,21 @@ Third message, with three values updates
 }
 ```
 
-- `MONITORINGS_UNAVAILABLE`: message sent when monitorings cannot be read due to a missing ventilation module
-- `MONITORINGS_SNAPSHOT`: a message including monitorings current state
-- `MONITORINGS_PATCH`: a message including monitorings updates
+#### MONITORINGS_UNAVAILABLE message
 
-### Settings
+Such message is sent when monitorings cannot be read due to a missing ventilation module.
 
-#### Subscription
+Client receives:
 
-Client sends:
+```json
+{
+  "type": "MONITORINGS_UNAVAILABLE"
+}
+```
+
+### Settings channel
+
+Subscription example:
 
 ```json
 {
@@ -336,15 +482,9 @@ Client sends:
 }
 ```
 
-Upon success, clients receives:
+#### SETTINGS_SNAPSHOT message
 
-```json
-{ "type": "SUBSCRIBE_SUCCEEDED" }
-```
-
-#### Received data
-
-First message:
+Example of initial snapshot message:
 
 ```json
 {
@@ -378,7 +518,17 @@ First message:
 }
 ```
 
-Data update:
+Snapshot/patch payloads include `newborn` boolean information when patient type is pediatric.
+When patient type becomes adult, `newborn` information is set to `UNAVAILABLE` in patch's payload.
+
+Generally speaking any information missing from previous state in current state is set to `UNAVAILABLE` in patch's payload.
+This is a way to represent the absence of information in a incremental update.
+
+Settings or alarm settings are numbers or `AUTO` or `OFF`.
+
+#### SETTINGS_PATCH message
+
+Example:
 
 ```json
 {
@@ -392,15 +542,21 @@ Data update:
 }
 ```
 
-- `SETTINGS_UNAVAILABLE`: message sent when settings cannot be read due to a missing ventilation module
-- `SETTINGS_SNAPSHOT`: a message including settings, alarm settings, mode, etc.
-- `SETTINGS_PATCH`: a message including updated informations about settings, alarm settings, etc.
+#### SETTINGS_UNAVAILABLE message
 
-### Ventilation
+Such message is sent when settings cannot be read due to a missing ventilation module.
 
-#### Subscription
+Client receives:
 
-Client sends:
+```json
+{
+  "type": "SETTINGS_UNAVAILABLE"
+}
+```
+
+### Ventilation channel
+
+Subscription example:
 
 ```json
 {
@@ -409,13 +565,9 @@ Client sends:
 }
 ```
 
-Upon success, clients receives:
+#### VENTILATION_STATE message
 
-```json
-{ "type": "SUBSCRIBE_SUCCEEDED" }
-```
-
-#### Received data
+Right after subscription client receives the ventilation state with current mode and if ventilation is started or not.
 
 ```json
 {
@@ -423,6 +575,32 @@ Upon success, clients receives:
   "payload": { "mode": "SET_AI", "started": true }
 }
 ```
+
+#### VENTILATION_STARTED message
+
+As soon as ventilation is started client will receive the following message:
+
+```json
+{
+  "type": "VENTILATION_STARTED",
+  "payload": { "epochMs": 1647254196170 }
+}
+```
+
+#### VENTILATION_STOPPED message
+
+As soon as ventilation is stopped client will receive the following message:
+
+```json
+{
+  "type": "VENTILATION_STOPPED",
+  "payload": { "epochMs": 1647254196170 }
+}
+```
+
+#### VENTILATION_PHASE_STARTED message
+
+As soon as a new ventilation phase has started client will receive the following message:
 
 ```json
 {
@@ -434,6 +612,22 @@ Upon success, clients receives:
 }
 ```
 
+Phase may have one of the following values:
+
+- `inspiration`
+- `expiration`
+- `pause`
+- `peep`
+
+Type may have one of the following values:
+
+- `controlled`: when ventilation is phase's initiator
+- `triggered`: when phase is patient-triggered
+
+#### VENTILATION_PHASE_ENDED message
+
+As soon as a new ventilation phase has ended client will receive the following message:
+
 ```json
 {
   "type": "VENTILATION_PHASE_ENDED",
@@ -444,6 +638,128 @@ Upon success, clients receives:
 }
 ```
 
-- `VENTILATION_UNAVAILABLE`: message sent when ventilation cannot be read due to a missing ventilation module
+#### VENTILATION_UNAVAILABLE message
 
-### Alarms
+Such message is sent when ventilation information cannot be read due to a missing ventilation module.
+
+Client receives:
+
+```json
+{
+  "type": "VENTILATION_UNAVAILABLE"
+}
+```
+
+### Alarms channel
+
+Subscription example:
+
+```json
+{
+  "type": "SUBSCRIBE",
+  "payload": ["alarms"]
+}
+```
+
+#### ALARMS_SNAPSHOT
+
+Right after subscription client will receive a snapshot like:
+
+```json
+{
+  "type": "ALARMS_SNAPSHOT",
+  "payload": {
+    "activatedAlarms": ["ALARM_DISCONNECTION", "ALARM_LOW_BATTERY"]
+  }
+}
+```
+
+This payload includes currently active alarms.
+
+#### ALARM_ACTIVATED
+
+When an alarm is activated, client will receive a message like:
+
+```json
+{
+  "type": "ALARM_ACTIVATED",
+  "payload": {
+    "epochMs": 1647509132380,
+    "name": "ALARM_DISCONNECTION"
+  }
+}
+```
+
+#### ALARM_DEACTIVATED
+
+When an alarm is deactivated, client will receive a message like:
+
+```json
+{
+  "type": "ALARM_DEACTIVATED",
+  "payload": {
+    "epochMs": 1647509132380,
+    "name": "ALARM_DISCONNECTION"
+  }
+}
+```
+
+Client should consider activated alarms as a set of uniq names (like `ALARM_DISCONNECTION`).
+This means that though same alarm might appear as activated multiple times when a deactivation is received, alarm is considered as not active.
+
+#### ALARMS_INHIBITED
+
+When alarms are inhibited, client will receive a message like:
+
+```json
+{
+  "type": "ALARMS_INHIBITED",
+  "payload": {
+    "epochMs": 1647509219000,
+    "remainingSeconds": 115,
+    "totalSeconds": 120
+  }
+}
+```
+
+In message above, alarms are inhibited for a total of 120 seconds and 155 seconds remain before inhibition stop.
+
+This kind of message will be sent periodically (like every 1 ou 2 seconds).
+This way client can update the remaining seconds in near real time.
+
+#### ALARMS_NOT_INHIBITED
+
+When alarms are not inhibited, client will receive a message like:
+
+```json
+{
+  "type": "ALARMS_NOT_INHIBITED"
+}
+```
+
+#### ALARMS_UNAVAILABLE
+
+Such message is sent when alarms cannot be read due to a missing ventilation module.
+
+Client receives:
+
+```json
+{
+  "type": "ALARMS_UNAVAILABLE"
+}
+```
+
+## Troubleshooting
+
+### Server does not send message anymore
+
+Server might be disconnected due to USB failure or reboot.
+As server uses timeouts on pong message to detect a silently disconnected client, client could do the same on its side.
+
+Client could consider server as disconnected when:
+
+- no ping has been received from a certain amount of time (like 20 s) or,
+- no message has been received at all from server recently or,
+- sent commands do not receive their corresponding responses (use reference property)
+
+Client could reconnect to server automatically and send a new `START_COMMUNICATION` command.
