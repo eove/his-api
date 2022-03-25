@@ -8,7 +8,10 @@ import {
   Message,
 } from '../lib';
 
-main().catch(console.error);
+main().catch((error) => {
+  console.error(error.message);
+  process.exit(1);
+});
 
 async function main(): Promise<void> {
   const logger = createConsoleLogger();
@@ -17,7 +20,8 @@ async function main(): Promise<void> {
     serialNumber: process.env.SERIAL_NUMBER,
   });
   client.on(ClientEventType.connected, onConnected);
-  client.on(ClientEventType.message, onMessage);
+  client.on(ClientEventType.messageReceived, onMessageReceived);
+  client.on(ClientEventType.messageSent, onMessageSent);
   client.on(ClientEventType.error, onError);
   process.once('SIGINT', onSigint);
   await client.connect();
@@ -26,7 +30,6 @@ async function main(): Promise<void> {
     logger.info('Connected');
     await client.writeMessage({
       type: ClientMessageType.startCommunication,
-      payload: undefined,
     });
     await client.writeMessage({
       type: ClientMessageType.subscribe,
@@ -42,8 +45,12 @@ async function main(): Promise<void> {
     }
   }
 
-  function onMessage(message: Message) {
-    logger.info('Reading', message);
+  function onMessageReceived(message: Message) {
+    logger.info('<- Receiving', message);
+  }
+
+  function onMessageSent(message: Message) {
+    logger.info('-> Sending', message);
   }
 
   function onError(error: Error) {
@@ -53,7 +60,6 @@ async function main(): Promise<void> {
   async function onSigint() {
     await client.writeMessage({
       type: ClientMessageType.stopCommunication,
-      payload: undefined,
     });
     await wait(1000);
     await client.disconnect();

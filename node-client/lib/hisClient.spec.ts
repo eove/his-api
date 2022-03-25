@@ -113,13 +113,13 @@ describe('HIS client', () => {
   });
 
   describe('on message from parser', () => {
-    it('should emit it', async () => {
+    it('should emit a message received with it', async () => {
       createClient();
 
       messageLineParser.emit(MessageLineParserEventType.message, 'hello');
 
       await wait(50);
-      expect(events).toContainEqual([ClientEventType.message, 'hello']);
+      expect(events).toContainEqual([ClientEventType.messageReceived, 'hello']);
     });
 
     describe('when ping is received', () => {
@@ -228,22 +228,6 @@ describe('HIS client', () => {
 
       expect(accessoryModeConfigurator.configure).not.toHaveBeenCalled();
     });
-
-    it('should rejects when device in accessory mode cannot be found', async () => {
-      deviceFinder.find = jest
-        .fn()
-        .mockResolvedValue(samples.createFoundDevice());
-      deviceFinder.waitForDeviceInAccessoryMode = jest
-        .fn()
-        .mockResolvedValue(undefined);
-      createClient();
-
-      const act = () => client.connect();
-
-      return expect(act).rejects.toThrow(
-        new Error('No device in accessory mode found')
-      );
-    });
   });
 
   describe('on reset', () => {
@@ -330,6 +314,27 @@ describe('HIS client', () => {
       return expect(act).rejects.toThrow(
         'Impossible to write because we are not connected'
       );
+    });
+  });
+
+  describe('on write message', () => {
+    it('should serialize it then write it using device', async () => {
+      const device = await connectToDeviceInAccessoryMode();
+      const message = { type: ClientMessageType.pong };
+
+      await client.writeMessage(message);
+
+      const expected = serializeMessage(message);
+      expect(device.transferOut).toHaveBeenCalledWith(expected);
+    });
+
+    it('should emit a message sent with it', async () => {
+      await connectToDeviceInAccessoryMode();
+      const message = { type: ClientMessageType.pong };
+
+      await client.writeMessage(message);
+
+      expect(events).toContainEqual([ClientEventType.messageSent, message]);
     });
   });
 

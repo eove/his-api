@@ -1,0 +1,25 @@
+name: "@eove/his-node-client ci"
+
+on:
+  push:
+    paths:
+      - "node-client/**"
+      - ".github/workflows/node_client_ci.yml"
+
+defaults:
+  run:
+    working-directory: node-client
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "14.19"
+
+      - run: npm install
+      - run: npm test

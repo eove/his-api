@@ -32,7 +32,8 @@ export interface HisClientCreation {
 export enum ClientEventType {
   connected = 'connected',
   disconnected = 'disconnected',
-  message = 'message',
+  messageReceived = 'messageReceived',
+  messageSent = 'messageSent',
   error = 'error',
 }
 
@@ -114,7 +115,7 @@ export class HisClient extends EventEmitter {
   }
 
   private onMessageFromParser(message: Message): void {
-    this.emit(ClientEventType.message, message);
+    this.emit(ClientEventType.messageReceived, message);
     if (message.type == ServerMessageType.ping) {
       this.writeMessage({ type: ClientMessageType.pong });
     }
@@ -133,9 +134,6 @@ export class HisClient extends EventEmitter {
     await this.putDeviceInAccessoryModeIfNeeded();
 
     const foundDevice = await this.deviceFinder.waitForDeviceInAccessoryMode();
-    if (!foundDevice) {
-      throw new Error('No device in accessory mode found');
-    }
     const { device } = foundDevice;
     await device.open();
     await device.claimInterface(accessoryInterfaceNumber);
@@ -152,9 +150,6 @@ export class HisClient extends EventEmitter {
       throw new Error('Cannot reset when connected');
     }
     const foundDevice = await this.deviceFinder.find();
-    if (!foundDevice) {
-      throw new Error('No device found');
-    }
     const { device } = foundDevice;
     await device.open();
     await device.reset();
@@ -168,6 +163,7 @@ export class HisClient extends EventEmitter {
   }
 
   async writeMessage(message: Message): Promise<void> {
+    this.emit(ClientEventType.messageSent, message);
     return this.write(serializeMessage(message));
   }
 
@@ -188,11 +184,8 @@ export class HisClient extends EventEmitter {
   }
 
   private async putDeviceInAccessoryModeIfNeeded(): Promise<void> {
-    const foundDeviceMaybe = await this.deviceFinder.find();
-    if (!foundDeviceMaybe) {
-      throw new Error('No device found');
-    }
-    const { device, inAccessoryMode } = foundDeviceMaybe;
+    const foundDevice = await this.deviceFinder.find();
+    const { device, inAccessoryMode } = foundDevice;
     if (inAccessoryMode) {
       return;
     }
