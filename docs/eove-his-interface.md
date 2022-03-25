@@ -1,48 +1,60 @@
-# Eove HIS interface
+# EOVE HIS interface
 
 ## Foreword
 
-To ease the monitoring of several devices in a hospital environment, a way to collect and gather each device data is required. The goal is to provide a dashboard to nurses, and avoid the need to physically move to patients room to check ventilation status.
-As a ventilation device manufacturer, EOVE provides an interface on its devices to export live data. It does not deal with the display of these data to nurses.
+To ease the monitoring of several devices in a hospital environment, a way to collect and gather each device data is required.
+The goal is to provide a dashboard to nurses, and avoid the need to physically move to patients room to check ventilation status.
+As a ventilation device manufacturer, EOVE provides an interface on its devices to export live data.
+It does not deal with the display of these data to nurses.
 
 ## Hardware setup
 
-The function is available for EO-150 products running at least eo150 application version `3.2.0 (TBC)`
+The function is available for EOVE-150 products running at least EOVE-150 application version `3.2.0 (TBC)`
 
 It uses a wired connection which requires a USB 2.0 cable with a micro USB plug.
 
-As an EO-150 product is made of two components : a ventilation module and a docking station, the data from the ventilation module will be available only if :
+As an EOVE-150 product is made of two components : a ventilation module and a docking station, the data from the ventilation module will be available only if :
+
 - the ventilation module is turned ON
 - the ventilation module is inserted in the docking station
 
-## Software setup 
+## Software setup
 
-The EO-150 station is put in USB accessory mode and delivers data to an accessory acting as USB host
+The EOVE-150 station is put in USB accessory mode and delivers data to an accessory acting as USB host
 
 ### Link level
 
-The link protocol is Android Open Accessory as described in https://source.android.com/devices/accessories/protocol
-The EO-150 station acts as an USB accessory and delivers data to an USB host.
+The link protocol is Android Open Accessory as described in https://source.android.com/devices/accessories/protocol.
+
+The EOVE-150 station is put in USB accessory mode and delivers data to an accessory acting as USB host
 
 ### Application level
 
-The eo150 application acts a a server that responds to client sollicitations.
+The EOVE-150 application acts as a server that responds to client sollicitations.
 
 ## Reference implementation
 
- EOVE provides a reference implementation that includes a client. This client is able to perform all the steps needed in order to retrieve live data from a running ventialtion device.
+EOVE provides a reference implementation that includes a [Node.JS client](https://github.com/eove/his-api/tree/master/node-client).
 
- The main steps a client must perform are :
- - trigger the accessory mode on the EO150 station
- - write message to start a high level communication
- - write message in order to subscribe to channels
- - read data from EO150 station
- - respond to EO150 station pings to keep the link alive
+This client is able to perform all the steps needed in order to retrieve live data from a running ventialtion device.
 
+The main steps a client must perform are :
+
+- trigger the accessory mode on the EO150 station
+- write message to start a high level communication
+- write message in order to subscribe to channels
+- read data from EO150 station
+- respond to EO150 station pings to keep the link alive
 
 ## Data format
 
-Data exchanged over USB link is formatted in JSON with a carriage return as separator.
+Data exchanged over USB link are JSON strings separated by a new line character and encoded in UTF-8 bytes.
+
+Example of such string before UTF-8 encoding:
+
+```
+{"type":"START_COMMUNICATION"}\n
+```
 
 Client sends messages and get replies.
 
@@ -50,57 +62,67 @@ Client sends messages and get replies.
 
 ### Accessory mode
 
-- prerequisite : usb cable plugged on micro USB port 
+- prerequisite : usb cable plugged on micro USB port
 
-Trigger Accessory Mode according to https://source.android.com/devices/accessories/aoa
-Reference implementation in `his-api/node-client/lib/usb/accessoryModeConfigurator.ts`
+Trigger Accessory Mode according to https://source.android.com/devices/accessories/aoa.
+
+Reference implementation in `his-api/node-client/lib/usb/accessoryModeConfigurator.ts`.
 
 ### Communication start
 
 - prerequisite : accessory mode triggered
 
 Client writes:
+
 ```json
 {
   "type": "START_COMMUNICATION"
 }
 ```
+
 Upon success, client reads:
+
 ```json
-{ 
+{
   "type": "START_COMMUNICATION_SUCCEEDED"
 }
 ```
 
 ### Communication ping
 
-To keep the connection alive, pings are emitted periodicaly by the server (typically every 8s). The client shall reply with pongs messages before the timeout (typically 5s).
+To keep the connection alive, pings are emitted periodicaly by the server (typically every 8s).
+The client shall reply with pongs messages before the timeout (typically 5s).
 
-Clien reads:
+Client reads:
+
 ```json
 { "type": "PING" }
 ```
 
 Client writes:
+
 ```json
-{"type":"PONG"}
+{ "type": "PONG" }
 ```
 
 ### Reference
 
-An optional `reference` field is available to help the client link messages and replies. The server returns the `reference` field provided unchanged in its replies.
-
+An optional `reference` field is available to help the client link messages and replies.
+The server returns the `reference` field provided unchanged in its replies.
 
 Client writes:
+
 ```json
 {
   "type": "START_COMMUNICATION",
   "reference": "1"
 }
 ```
+
 As a response, client reads:
+
 ```json
-{ 
+{
   "type": "START_COMMUNICATION_SUCCEEDED",
   "reference": "1"
 }
@@ -111,13 +133,15 @@ As a response, client reads:
 - prerequisite : communication started
 
 Client sends:
+
 ```json
 {
-      "type": "GET_INFORMATION"
+  "type": "GET_INFORMATION"
 }
 ```
 
 Client reads:
+
 ```json
 {
   "type": "GET_INFORMATION_SUCCEEDED",
@@ -130,7 +154,7 @@ Client reads:
       "cpuVersion": "C150000702",
       "powerVersion": "P150000400",
       "gaugeVersion": "5",
-      "batteryType": "000000241701"
+      "batteryType": "EOVE1"
     },
     "station": {
       "type": "eodisplay",
@@ -146,7 +170,7 @@ Note: ventilation module data are available only if the ventilation module is tu
 
 ## Ventilation data
 
-The ventilation data are provided through subscription to channels.  
+The ventilation data are provided through subscription to channels.
 
 The client sends `SUBSCRIBE` or `UNSUBSCRIBE` commands for a given channel.
 
@@ -161,13 +185,12 @@ Available channels are:
 The response to a subscription is an initial `snapshot`, followed by `patches` to update the data.
 
 When ventilaton module reconnects a snapshot is sent before any patch.
-Client can then replace all the state it has built so far.
+Client can then replace all the state he or she has built so far.
 
 Snapshot/patch payloads include `newborn` information when patient type is pediatric.
 When patient type becomes adult, `newborn` information is set to `UNAVAILABLE` in patch's payload.
 Generally speaking any information missing from previous state in current state is set to `UNAVAILABLE` in patch's payload.
 This is a way to represent the absence of information in a incremental update.
-
 
 ### Waveforms
 
@@ -180,7 +203,7 @@ Client sends:
 ```json
 {
   "type": "SUBSCRIBE",
-  "payload": ["waveforms"],
+  "payload": ["waveforms"]
 }
 ```
 
@@ -188,38 +211,38 @@ Upon success, clients receives:
 
 ```json
 { "type": "SUBSCRIBE_SUCCEEDED" }
-````
+```
 
-#### Data 
+#### Data
 
-Waveforms can be build from a stream of samples that contain timestamp, pressure, flow, and volume. 
+Waveforms can be built from a stream of samples that contain timestamp, pressure, flow, and volume.
 A sample is a table with this format : `[number (epoch ms), number, number, number]`.
 
-For compacity and performance, samples are grouped in 12-sample chunks such as : 
+For compacity and performance, samples are grouped in 12-sample chunks such as :
+
 ```json
 {
   "type": "WAVEFORMS",
   "payload": [
-    [ 1646909463640, 19.6, 26.7, 357 ],
-    [ 1646909463680, 19.8, 26.7, 375 ],
-    [ 1646909463720, 19.6, 26.7, 393 ],
-    [ 1646909463760, 19.6, 26.7, 411 ],
-    [ 1646909463800, 19.6, 26.7, 429 ],
-    [ 1646909463840, 19.5, 26.7, 447 ],
-    [ 1646909463880, 19.6, 26.7, 465 ],
-    [ 1646909463920, 19.5, 26.7, 483 ],
-    [ 1646909463960, 19.7, 26.7, 501 ],
-    [ 1646909463990, 19.5, 26.7, 519 ],
-    [ 1646909464040, 19.7, 26.7, 537 ],
-    [ 1646909464080, 19.7, 26.7, 555 ]
+    [1646909463640, 19.6, 26.7, 357],
+    [1646909463680, 19.8, 26.7, 375],
+    [1646909463720, 19.6, 26.7, 393],
+    [1646909463760, 19.6, 26.7, 411],
+    [1646909463800, 19.6, 26.7, 429],
+    [1646909463840, 19.5, 26.7, 447],
+    [1646909463880, 19.6, 26.7, 465],
+    [1646909463920, 19.5, 26.7, 483],
+    [1646909463960, 19.7, 26.7, 501],
+    [1646909463990, 19.5, 26.7, 519],
+    [1646909464040, 19.7, 26.7, 537],
+    [1646909464080, 19.7, 26.7, 555]
   ]
 }
 ```
 
-A sample is taken every 40ms by the ventilation module, which results in 12-sample chunks emitted every 480ms from the station.
+A sample is taken every 80 ms (or 40 ms for newborn patients) by the ventilation module, which results in 12-samples chunks emitted every 960 ms (or 480 ms for newborn patients) from the station.
 
 - `WAVEFORMS_UNAVAILABLE`: message sent when waveforms cannot be read due to a missing ventilation module
-
 
 Waveforms have no snapshot/patch distinction because we send all components every time (volume, flow, etc.).
 
@@ -232,7 +255,7 @@ Client sends:
 ```json
 {
   "type": "SUBSCRIBE",
-  "payload": ["monitorings"],
+  "payload": ["monitorings"]
 }
 ```
 
@@ -240,12 +263,14 @@ Upon success, clients receives:
 
 ```json
 { "type": "SUBSCRIBE_SUCCEEDED" }
-````
+```
 
-#### Received data 
+#### Received data
+
 At first, all data is new, so the first message contains all values. Further messages will only hold updates.
 
-Fist message:
+First message:
+
 ```json
 {
   "type": "MONITORINGS_SNAPSHOT",
@@ -272,6 +297,7 @@ Fist message:
 ```
 
 Second message, with only one value to be updated:
+
 ```json
 {
   "type": "MONITORINGS_PATCH",
@@ -280,6 +306,7 @@ Second message, with only one value to be updated:
 ```
 
 Third message, with three values updates
+
 ```json
 {
   "type": "MONITORINGS_PATCH",
@@ -291,6 +318,7 @@ Third message, with three values updates
   }
 }
 ```
+
 - `MONITORINGS_UNAVAILABLE`: message sent when monitorings cannot be read due to a missing ventilation module
 - `MONITORINGS_SNAPSHOT`: a message including monitorings current state
 - `MONITORINGS_PATCH`: a message including monitorings updates
@@ -304,7 +332,7 @@ Client sends:
 ```json
 {
   "type": "SUBSCRIBE",
-  "payload": ["settings"],
+  "payload": ["settings"]
 }
 ```
 
@@ -312,7 +340,8 @@ Upon success, clients receives:
 
 ```json
 { "type": "SUBSCRIBE_SUCCEEDED" }
-````
+```
+
 #### Received data
 
 First message:
@@ -367,7 +396,6 @@ Data update:
 - `SETTINGS_SNAPSHOT`: a message including settings, alarm settings, mode, etc.
 - `SETTINGS_PATCH`: a message including updated informations about settings, alarm settings, etc.
 
-
 ### Ventilation
 
 #### Subscription
@@ -377,7 +405,7 @@ Client sends:
 ```json
 {
   "type": "SUBSCRIBE",
-  "payload": ["ventilation"],
+  "payload": ["ventilation"]
 }
 ```
 
@@ -385,9 +413,9 @@ Upon success, clients receives:
 
 ```json
 { "type": "SUBSCRIBE_SUCCEEDED" }
-````
+```
 
-#### Received data 
+#### Received data
 
 ```json
 {
@@ -395,7 +423,6 @@ Upon success, clients receives:
   "payload": { "mode": "SET_AI", "started": true }
 }
 ```
-
 
 ```json
 {
@@ -420,4 +447,3 @@ Upon success, clients receives:
 - `VENTILATION_UNAVAILABLE`: message sent when ventilation cannot be read due to a missing ventilation module
 
 ### Alarms
-

@@ -1,7 +1,7 @@
 {
   "name": "@eove/his-node-client",
   "version": "1.0.0-dev.1",
-  "description": "Node.JS client to connect to an Eove device exposing HIS features",
+  "description": "Node.JS client to connect to an EOVE device exposing HIS features",
   "author": "EOVE",
   "license": "MIT",
   "repository": {

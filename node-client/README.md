@@ -1,6 +1,6 @@
 # @eove/his-node-client
 
-Node.JS client to connect to an Eove device exposing HIS features
+Node.JS client to connect to an EOVE device exposing HIS features
 
 ## Installation
 
