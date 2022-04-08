@@ -7,6 +7,9 @@ The goal is to provide a dashboard to nurses, and avoid the need to physically m
 As a ventilation device manufacturer, EOVE provides an interface on its devices to export live data.
 It does not deal with the display of these data to nurses.
 
+> **WARNING**: The software using the eo150 ventilation data must be developed and validated by applying medical devices standards for its intended use.
+Eove does not assume responsibility for the use of the data.
+
 ## Hardware setup
 
 The function is available for EOVE-150 products running at least EOVE-150 application version `3.2.0 (TBC)`.
