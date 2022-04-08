@@ -2,16 +2,31 @@
 
 ## Foreword
 
-To ease the monitoring of several devices in a hospital environment, a way to collect and gather each device data are required.
+To ease the monitoring of several devices in a hospital environment, a way to collect and gather each device data is required.
 The goal is to provide a dashboard to nurses, and avoid the need to physically move to patients room to check ventilation status.
 As a ventilation device manufacturer, EOVE provides an interface on its devices to export live data.
 It does not deal with the display of these data to nurses.
 
 ## Hardware setup
 
-The function is available for EOVE-150 products running at least EOVE-150 application version `3.2.0 (TBC)`
+The function is available for EOVE-150 products running at least EOVE-150 application version `3.2.0 (TBC)`.
 
 It uses a wired connection which requires a USB 2.0 cable with a micro USB plug.
+
+```
+      Computer
+   running HIS client
+     +---------+
+     | [     ] |                            EOVE-150 ventilator
+     | [     ] |                            running HIS server
+     |         |                            +----------------+
+     |      o  |                            | +------------+ |
+     |         |                            | |            | |
+     |         |                            | |            | |
+     |         | USB-A            micro USB | |            | |
+     |         +----------------------------+ +------------+ |
+     +---------+        USB cable           +----------------+
+```
 
 An EOVE-150 product is made of two components: a ventilation module and a docking station running Android OS.
 This means the data from the ventilation module will only be available if:
@@ -21,17 +36,25 @@ This means the data from the ventilation module will only be available if:
 
 ## Software setup
 
-The EOVE-150 station is put in USB accessory mode and delivers data to an accessory acting as USB host
+The EOVE-150 station is put in USB accessory mode and delivers data to an accessory acting as USB host.
 
 ### Link level
 
 The link protocol is Android Open Accessory as described in https://source.android.com/devices/accessories/protocol.
 
-The EOVE-150 station is put in USB accessory mode and delivers data to an accessory acting as USB host
+The EOVE-150 station is put in USB accessory mode and delivers data to an accessory acting as USB host.
 
 ### Application level
 
-The EOVE-150 application acts as a server that responds to client sollicitations.
+The EOVE-150 application acts as a server that responds to client sollicitations when HIS connectivity is enabled.
+
+To enable HIS connectivity on EOVE-150 user interface:
+
+- open drawer menu
+- press unlock button at the bottom
+- press on maintenance menu entry
+- press on connectivity tab
+- in HIS section toggle Enable connectivity item
 
 ## Reference implementation
 
@@ -90,7 +113,7 @@ This means you cannot connect two clients to the same server.
 ### Communication ping/pong mechanism
 
 To keep the connection alive, pings are emitted periodicaly by the server (typically every 8s).
-The client shall reply with special [pongs messages](#pong-command) before the timeout (typically 5s).
+The client shall reply with special [pongs messages](#pong-message) before the timeout (typically 5s).
 
 Client reads:
 
@@ -109,7 +132,7 @@ Client writes:
 ```
 
 When client fails to send a pong message, server will consider client as disconnected.
-This means that client will have to enable [high level communication](#high-level-communication) again.
+This means that client will have to start [high level communication](#high-level-communication) again.
 
 ### Data format
 
@@ -123,9 +146,9 @@ Dates (with time component) are converted to epoch with a millisecond precision.
 Client can send message to server and these messages are mostly commands.
 This means message type will be an order like `DO_SOMETHING` or `GET_ME_SOMETHING`.
 
-Commands will often receive a positive response message like `DO_SOMETHING_SUCCEEDED`.
+Command messages will often receive a positive response message like `DO_SOMETHING_SUCCEEDED`.
 
-`DO_SOMETHING` or `GET_ME_SOMETHING` are not valid commands but are used in several examples because they are concise enough.
+`DO_SOMETHING` or `GET_ME_SOMETHING` are not valid messages but are used in several examples because they are concise enough.
 
 A message has the following simplified type:
 
@@ -139,8 +162,8 @@ interface Message {
 
 ### High level communication
 
-By default server will ignore any message coming from client because high level communication is disabled.
-Client should send a [START_COMMUNICATION](#startcommunication-command) command to enable it.
+By default server will ignore any message coming from client because high level communication is not considered as started.
+Client should send a [START_COMMUNICATION](#startcommunication-message) message to start it.
 
 ### Using a reference
 
@@ -165,9 +188,10 @@ As a response, client reads:
 }
 ```
 
-### START_COMMUNICATION command
+### START_COMMUNICATION message
 
-This command must be the first one because it enables high level communication with server.
+This message must be the first one because it starts high level communication with server.
+If client is able to send such message and receive a positive response it basically validates the bidirectional communication.
 
 Client writes:
 
@@ -190,9 +214,9 @@ Client reads:
 
 The succeeded response includes the HIS server API version.
 
-### STOP_COMMUNICATION command
+### STOP_COMMUNICATION message
 
-This command will properly stop high level communication with server.
+This message will properly stop high level communication with server.
 
 Client writes:
 
@@ -210,9 +234,9 @@ Client reads:
 }
 ```
 
-No other command will be processed by server except another start communication one.
+No other message will be processed by server except another start communication one.
 
-### PONG command
+### PONG message
 
 Client writes:
 
@@ -224,16 +248,16 @@ Client writes:
 
 This message won't receive a corresponding response but another ping message will follow.
 
-### SUBSCRIBE command
+### SUBSCRIBE message
 
 Client can subscribe to various channels to receive data in real time.
 
-Example for a waveforms subscription:
+Example for a waveforms and monitorings subscription:
 
 ```json
 {
   "type": "SUBSCRIBE",
-  "payload": ["waveforms"]
+  "payload": ["waveforms", "monitorings"]
 }
 ```
 
@@ -245,10 +269,10 @@ Upon success, client receives:
 }
 ```
 
-When client subscribes with multiple commands he or she will be subscribed to all provided channels without any duplications.
+When client subscribes with multiple messages he or she will be subscribed to all provided channels without any duplications.
 In other word client may subscribe to `waveforms` and then `waveforms` plus `monitorings`, he will receive waveforms messages only once.
 
-### UNSUBSCRIBE command
+### UNSUBSCRIBE message
 
 Example for a waveforms unsubscription:
 
@@ -269,7 +293,7 @@ Upon success, client receives:
 
 Client might subscribe to a given channel multiple times but when he or she unsubscribes from it, he or she will be totally unsubscribed.
 
-### GET_INFORMATION command
+### GET_INFORMATION message
 
 Client sends:
 
@@ -316,7 +340,7 @@ Note: ventilation module data are available only if the ventilation module is tu
 
 The ventilation data are provided in near real time through subscription to channels.
 
-The client sends `SUBSCRIBE` or `UNSUBSCRIBE` commands for one or multiple channels.
+The client sends `SUBSCRIBE` or `UNSUBSCRIBE` messages for one or multiple channels.
 
 Available channels are:
 
@@ -704,7 +728,7 @@ When an alarm is deactivated, client will receive a message like:
 }
 ```
 
-Client should consider activated alarms as a set of uniq names (like `ALARM_DISCONNECTION`).
+Client should consider activated alarms as a set of unique names (like `ALARM_DISCONNECTION`).
 This means that though same alarm might appear as activated multiple times when a deactivation is received, alarm is considered as not active.
 
 #### ALARMS_INHIBITED
@@ -722,7 +746,7 @@ When alarms are inhibited, client will receive a message like:
 }
 ```
 
-In message above, alarms are inhibited for a total of 120 seconds and 155 seconds remain before inhibition stop.
+In message above, alarms are inhibited for a total of 120 seconds and 115 seconds remain before inhibition stop.
 
 This kind of message will be sent periodically (like every 1 ou 2 seconds).
 This way client can update the remaining seconds in near real time.
@@ -760,6 +784,6 @@ Client could consider server as disconnected when:
 
 - no ping has been received from a certain amount of time (like 20 s) or,
 - no message has been received at all from server recently or,
-- sent commands do not receive their corresponding responses (use reference property)
+- sent messages do not receive their corresponding responses (use reference property)
 
-Client could reconnect to server automatically and send a new `START_COMMUNICATION` command.
+Client could reconnect to server automatically and send a new `START_COMMUNICATION` message.
