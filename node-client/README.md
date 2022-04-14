@@ -41,6 +41,7 @@ npx ts-node examples/connect
 Available examples are:
 
 - `connect`: simple connection with ping/pong exchanges and get information result
+- `list`: to print Android devices serial numbers
 - `reset`: to reset usb stack on both sides (android and host) without unplugging cable
 - `subscribeToAll`: to subscribe to all available channels
 - `subscribeToWaveforms`: to subscribe to waveforms channel

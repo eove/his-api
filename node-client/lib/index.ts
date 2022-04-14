@@ -2,6 +2,7 @@ import { HisClient, HisClientCreation } from './hisClient';
 import { createConsoleLogger } from './tools';
 import {
   createFindUsbDevice,
+  createFindUsbDevices,
   AccessoryModeConfigurator,
   DeviceFinder,
   UsbReader,
@@ -41,6 +42,7 @@ export function createHisClient(creation: Creation = {}): HisClient {
   } = creation;
   const logger = createConsoleLogger({ debugEnabled });
   const findUsbDevice = createFindUsbDevice({ logger });
+  const findUsbDevices = createFindUsbDevices({ logger });
   const deviceFinder = new DeviceFinder({
     serialNumber,
     vendorId,
@@ -49,6 +51,7 @@ export function createHisClient(creation: Creation = {}): HisClient {
     timeoutMs: deviceDetectionTimeoutMs,
     pollingDelayMs: deviceDetectionPollingDelayMs,
     findUsbDevice,
+    findUsbDevices,
     logger,
   });
   const usbReader = new UsbReader({ logger, readDelayMs, isUsbTimeoutError });

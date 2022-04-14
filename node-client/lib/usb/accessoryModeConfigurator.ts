@@ -20,7 +20,7 @@ export class AccessoryModeConfigurator {
   }
 
   async configure(device: UsbDevice) {
-    this.logger.info('Putting device in accessory mode');
+    this.logger.debug('Putting device in accessory mode');
     try {
       await device.open();
       await this.validateVersionCode(device);

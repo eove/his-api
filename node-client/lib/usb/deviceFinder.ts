@@ -1,7 +1,12 @@
 import { performance } from 'perf_hooks';
 
 import { Logger, wait } from '../tools';
-import { FindUsbDevice, UsbDevice, UsbDeviceFilter } from './usbDevice';
+import {
+  FindUsbDevice,
+  FindUsbDevices,
+  UsbDevice,
+  UsbDeviceFilter,
+} from './usbDevice';
 
 export interface FoundDevice {
   device: UsbDevice;
@@ -16,6 +21,7 @@ export interface DeviceFinderCreation {
   timeoutMs: number;
   pollingDelayMs: number;
   findUsbDevice: FindUsbDevice;
+  findUsbDevices: FindUsbDevices;
   logger: Logger;
 }
 
@@ -27,6 +33,7 @@ export class DeviceFinder {
   private readonly timeoutMs: number;
   private readonly pollingDelayMs: number;
   private readonly findUsbDevice: FindUsbDevice;
+  private readonly findUsbDevices: FindUsbDevices;
   private readonly logger: Logger;
 
   constructor(creation: DeviceFinderCreation) {
@@ -38,6 +45,7 @@ export class DeviceFinder {
       timeoutMs,
       pollingDelayMs,
       findUsbDevice,
+      findUsbDevices,
       logger,
     } = creation;
     this.serialNumber = serialNumber;
@@ -48,6 +56,7 @@ export class DeviceFinder {
     this.pollingDelayMs = pollingDelayMs;
     this.logger = logger;
     this.findUsbDevice = findUsbDevice;
+    this.findUsbDevices = findUsbDevices;
   }
 
   public async waitForDeviceInAccessoryMode(): Promise<FoundDevice> {
@@ -83,6 +92,17 @@ export class DeviceFinder {
       device.productId
     );
     return { device, inAccessoryMode };
+  }
+
+  public async findAll(): Promise<FoundDevice[]> {
+    const filters = this.createUsbFilters();
+    const devices = await this.findUsbDevices(filters);
+    return devices.map((device) => {
+      const inAccessoryMode = this.accessoryModeProductIds.includes(
+        device.productId
+      );
+      return { device, inAccessoryMode };
+    });
   }
 
   private createUsbFilters(): UsbDeviceFilter[] {
