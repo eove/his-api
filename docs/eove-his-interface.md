@@ -12,7 +12,10 @@ Eove does not assume responsibility for the use of the data.
 
 ## Hardware setup
 
-The function is available for EOVE-150 products running at least EOVE-150 application version `3.2.0 (TBC)`.
+The function is available for EOVE-150 products running at least EOVE-150 application version:
+
+- `>= 3.2.0` for `3.x` versions
+- `>= 2.6.0` for `2.x` versions
 
 It uses a wired connection which requires a USB 2.0 cable with a micro USB plug.
 
