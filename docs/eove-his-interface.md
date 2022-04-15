@@ -116,7 +116,7 @@ Here is an extract:
 Given the descriptor [hisapi_v0.9.0-32.2_eo150_en-EN.json](https://github.com/eove/his-api/tree/master/docs/descriptors/hisapi_v0.9.0-32.2_eo150_en-EN.json) client can read `MON_VTI_u` description which is actually "VTI" monitoring and unit is "UNIT_ML" which corresponds to "mL".
 
 A descriptor filename is composed of `hisapi_v<his api version>-<module api version>_<product type>_<locale>.json`.
-Most of these information can be retrieved with [GET_INFORMATION message](#getinformation-message) and its `GET_INFORMATION_SUCCEEDED` response.
+Most of these information can be retrieved with [GET_INFORMATION message](#get_information-message) and its `GET_INFORMATION_SUCCEEDED` response.
 
 Here is an extract:
 
@@ -214,7 +214,7 @@ interface Message {
 ### High level communication
 
 By default server will ignore any message coming from client because high level communication is not considered as started.
-Client should send a [START_COMMUNICATION](#startcommunication-message) message to start it.
+Client should send a [START_COMMUNICATION](#start_communication-message) message to start it.
 
 ### Using a reference
 
@@ -398,7 +398,7 @@ Available channels are:
 
 - [waveforms](#waveforms-channel): to receive a batch of waveforms
 - [monitorings](#monitorings-channel): to receive monitorings updates
-- [settings](#monitorings-channel): to receive settings updates for current ventilation mode
+- [settings](#settings-channel): to receive settings updates for current ventilation mode
 - [alarms](#alarms-channel): to receive alarms activations/deactivations
 - [ventilation](#ventilation-channel): to receive ventilation related information and updates
 
