@@ -3,14 +3,16 @@ import { isEqual } from 'lodash/fp';
 import { DeviceFinder, DeviceFinderCreation } from './deviceFinder';
 import { samples } from '../tests';
 import { createSilentLogger } from '../tools';
-import { FindUsbDevice } from './usbDevice';
+import { FindUsbDevice, FindUsbDevices } from './usbDevice';
 
 describe('Device finder', () => {
   let findUsbDevice: FindUsbDevice;
+  let findUsbDevices: FindUsbDevices;
   let finder: DeviceFinder;
 
   beforeEach(() => {
     findUsbDevice = jest.fn().mockResolvedValue(undefined);
+    findUsbDevices = jest.fn().mockResolvedValue(undefined);
   });
 
   describe('on find', () => {
@@ -103,6 +105,57 @@ describe('Device finder', () => {
       return expect(act).rejects.toThrow(
         'No device found for serial number x24'
       );
+    });
+  });
+
+  describe('on find all', () => {
+    it('should find devices using all configured ids', async () => {
+      const device1 = samples.createDevice();
+      const device2 = samples.createDevice();
+      findUsbDevices = jest.fn().mockImplementation(async (filters) => {
+        if (
+          !isEqual(filters, [
+            { vendorId: 1, productId: 10 },
+            { vendorId: 1, productId: 11 },
+            { vendorId: 1, productId: 100 },
+            { vendorId: 1, productId: 101 },
+          ])
+        ) {
+          return undefined;
+        }
+        return [device1, device2];
+      });
+      createDeviceFinder({
+        vendorId: 1,
+        productIds: [10, 11],
+        accessoryModeProductIds: [100, 101],
+      });
+
+      const result = await finder.findAll();
+
+      expect(result).toHaveLength(2);
+      expect(result[0]).toEqual({ device: device1, inAccessoryMode: false });
+      expect(result[1]).toEqual({ device: device2, inAccessoryMode: false });
+    });
+
+    it('should consider device is in accessory mode based on product id', async () => {
+      findUsbDevices = jest
+        .fn()
+        .mockResolvedValue([samples.createDeviceInAccessoryMode()]);
+      createDeviceFinder();
+
+      const result = await finder.findAll();
+
+      expect(result[0]).toMatchObject({ inAccessoryMode: true });
+    });
+
+    it('could find no device at all', async () => {
+      findUsbDevices = jest.fn().mockResolvedValue([]);
+      createDeviceFinder();
+
+      const result = await finder.findAll();
+
+      expect(result).toHaveLength(0);
     });
   });
 
@@ -210,6 +263,7 @@ describe('Device finder', () => {
           timeoutMs: 1000,
           pollingDelayMs: 50,
           findUsbDevice,
+          findUsbDevices,
           logger: createSilentLogger(),
         },
         creation

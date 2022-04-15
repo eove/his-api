@@ -230,6 +230,19 @@ describe('HIS client', () => {
     });
   });
 
+  describe('on find devices', () => {
+    it('should delegate to device finder', async () => {
+      const found1 = samples.createFoundDevice();
+      const found2 = samples.createFoundDevice();
+      deviceFinder.findAll = jest.fn().mockResolvedValue([found1, found2]);
+      createClient();
+
+      const result = await client.findDevices();
+
+      expect(result).toEqual([found1, found2]);
+    });
+  });
+
   describe('on reset', () => {
     it('should open device then reset', async () => {
       const foundDevice = samples.createFoundDevice();

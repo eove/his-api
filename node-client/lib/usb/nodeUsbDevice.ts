@@ -1,4 +1,4 @@
-import { webusb } from 'usb';
+import { WebUSB } from 'usb';
 
 import { Logger } from '../tools';
 import {
@@ -16,6 +16,8 @@ export function isUsbTimeoutError(error: Error) {
   return error.message.includes('LIBUSB_TRANSFER_TIMED_OUT');
 }
 
+const webusb = new WebUSB({ allowAllDevices: true });
+
 export function createFindUsbDevice(creation: FindUsbDeviceCreation) {
   const { logger } = creation;
   return findUsbDevice;
@@ -27,6 +29,33 @@ export function createFindUsbDevice(creation: FindUsbDeviceCreation) {
       .then((d) => new NodeUsbDevice(d, logger))
       .catch(() => undefined);
   }
+}
+
+export function createFindUsbDevices(creation: FindUsbDeviceCreation) {
+  const { logger } = creation;
+  return findUsbDevices;
+  async function findUsbDevices(
+    filters: UsbDeviceFilter[]
+  ): Promise<UsbDevice[]> {
+    const devices = await webusb.getDevices();
+    const filtered = devices.filter((d) =>
+      filters.some((f) => deviceMatchesFilter(d, f))
+    );
+    return filtered.map((d) => new NodeUsbDevice(d, logger));
+  }
+}
+
+function deviceMatchesFilter(device: USBDevice, filter: UsbDeviceFilter) {
+  if (filter.productId && filter.productId !== device.productId) {
+    return false;
+  }
+  if (filter.vendorId && filter.vendorId !== device.vendorId) {
+    return false;
+  }
+  if (filter.serialNumber && filter.serialNumber !== device.serialNumber) {
+    return false;
+  }
+  return true;
 }
 
 export class NodeUsbDevice implements UsbDevice {
@@ -44,6 +73,10 @@ export class NodeUsbDevice implements UsbDevice {
 
   get vendorId(): number {
     return this.device.vendorId;
+  }
+
+  get serialNumber(): string | undefined {
+    return this.device.serialNumber;
   }
 
   async open(): Promise<void> {

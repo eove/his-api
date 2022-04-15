@@ -14,6 +14,7 @@ export interface UsbTimeouts {
 export interface UsbDevice {
   get productId(): number;
   get vendorId(): number;
+  get serialNumber(): string | undefined;
   open(): Promise<void>;
   claimInterface(interfaceNumber: number): Promise<void>;
   get opened(): boolean;
@@ -35,5 +36,9 @@ export interface UsbDeviceFilter {
 export type FindUsbDevice = (
   filters: UsbDeviceFilter[]
 ) => Promise<UsbDevice | undefined>;
+
+export type FindUsbDevices = (
+  filters: UsbDeviceFilter[]
+) => Promise<UsbDevice[]>;
 
 export type IsUsbTimeoutError = (error: Error) => boolean;

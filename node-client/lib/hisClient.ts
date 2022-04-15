@@ -16,6 +16,7 @@ import {
   UsbReaderEvent,
   DeviceFinder,
   AccessoryModeConfigurator,
+  FoundDevice,
 } from './usb';
 import { Logger } from './tools';
 
@@ -130,7 +131,7 @@ export class HisClient extends EventEmitter {
   }
 
   async connect() {
-    this.logger.info('Connecting');
+    this.logger.debug('Connecting');
     await this.putDeviceInAccessoryModeIfNeeded();
 
     const foundDevice = await this.deviceFinder.waitForDeviceInAccessoryMode();
@@ -140,12 +141,17 @@ export class HisClient extends EventEmitter {
     device.setTimeouts(this.timeouts, accessoryInterfaceNumber);
     this.device = device;
     this.usbReader.start(device);
-    this.logger.info('Device is connected');
+    this.logger.debug('Device is connected');
     this.emit(ClientEventType.connected);
   }
 
+  async findDevices(): Promise<FoundDevice[]> {
+    this.logger.debug('Finding devices');
+    return this.deviceFinder.findAll();
+  }
+
   async reset() {
-    this.logger.info('Reseting');
+    this.logger.debug('Reseting');
     if (this.device) {
       throw new Error('Cannot reset when connected');
     }
@@ -153,13 +159,13 @@ export class HisClient extends EventEmitter {
     const { device } = foundDevice;
     await device.open();
     await device.reset();
-    this.logger.info('Device is reset');
+    this.logger.debug('Device is reset');
   }
 
   async disconnect() {
-    this.logger.info('Disconnecting');
+    this.logger.debug('Disconnecting');
     await this.disconnectSilently();
-    this.logger.info('Device is disconnected');
+    this.logger.debug('Device is disconnected');
   }
 
   async writeMessage(message: Message): Promise<void> {
