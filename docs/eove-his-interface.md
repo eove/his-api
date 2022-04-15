@@ -8,7 +8,7 @@ As a ventilation device manufacturer, EOVE provides an interface on its devices 
 It does not deal with the display of these data to nurses.
 
 > **WARNING**: The software using the eo150 ventilation data must be developed and validated by applying medical devices standards for its intended use.
-Eove does not assume responsibility for the use of the data.
+> Eove does not assume responsibility for the use of the data.
 
 ## Hardware setup
 
@@ -87,6 +87,51 @@ Example of such string before UTF-8 encoding:
 ```
 
 Client can either send or receive such messages.
+
+### API descriptors
+
+JSON data may include some constants like `MON_VTI_u` and some values like `303`.
+We do not include any description or units at runtime as we want to provide a compact API.
+In exchange, we provide static API [descriptors](https://github.com/eove/his-api/tree/master/docs/descriptors).
+These descriptors include information like monitorings or settings with units and english descriptions for each constant.
+
+Here is an extract:
+
+```json
+{
+  "monitorings": {
+    "MON_VTI_u": {
+      "label": "VTI",
+      "unit": "UNIT_ML"
+    }
+  },
+  "units": {
+    "UNIT_ML": {
+      "label": "mL"
+    }
+  }
+}
+```
+
+Given the descriptor [hisapi_v0.9.0-32.2_eo150_en-EN.json](https://github.com/eove/his-api/tree/master/docs/descriptors/hisapi_v0.9.0-32.2_eo150_en-EN.json) client can read `MON_VTI_u` description which is actually "VTI" monitoring and unit is "UNIT_ML" which corresponds to "mL".
+
+A descriptor filename is composed of `hisapi_v<his api version>-<module api version>_<product type>_<locale>.json`.
+Most of these information can be retrieved with [GET_INFORMATION message](#getinformation-message) and its `GET_INFORMATION_SUCCEEDED` response.
+
+Here is an extract:
+
+```json
+{
+  "type": "GET_INFORMATION_SUCCEEDED",
+  "payload": {
+    "apiVersion": "0.9.0",
+    "product": { "type": "eo150" },
+    "module": {
+      "apiVersion": "32.2"
+    }
+  }
+}
+```
 
 ## Plumbing
 
@@ -315,6 +360,7 @@ Client reads:
 {
   "type": "GET_INFORMATION_SUCCEEDED",
   "payload": {
+    "apiVersion": "0.9.0",
     "product": { "type": "eo150" },
     "module": {
       "type": "vm150",
