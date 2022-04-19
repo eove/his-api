@@ -697,7 +697,7 @@ Phase may have one of the following values:
 
 Type may have one of the following values:
 
-- `controlled`: when ventilation is phase's initiator
+- `controlled`: when phase is initiated by ventilation module
 - `triggered`: when phase is patient-triggered
 
 #### VENTILATION_PHASE_ENDED message
