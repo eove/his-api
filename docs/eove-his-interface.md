@@ -64,7 +64,7 @@ To enable HIS connectivity on EOVE-150 user interface:
 
 ## Reference implementation
 
-EOVE provides a reference implementation that includes a [Node.JS client](https://github.com/eove/his-API/tree/master/node-client).
+EOVE provides a reference implementation that includes a Node.JS client (see https://github.com/eove/his-API/tree/master/node-client).
 
 This client is able to perform all the steps needed in order to retrieve live data from a running ventialtion device.
 
@@ -92,7 +92,7 @@ Client can either send or receive such messages.
 
 JSON data may include some constants like `MON_VTI_u` and some values like `303`.
 We do not include any description or units at runtime as we want to provide a compact API.
-In exchange, we provide static API [descriptors](https://github.com/eove/his-api/tree/master/docs/descriptors).
+In exchange, we provide static API descriptors (see https://github.com/eove/his-api/tree/master/docs/descriptors).
 These descriptors include information like monitorings or settings with units and english descriptions for each constant.
 
 Here is an extract:
@@ -113,7 +113,7 @@ Here is an extract:
 }
 ```
 
-Given the descriptor [hisapi_v0.9.0-32.2_eo150_en-EN.json](https://github.com/eove/his-api/tree/master/docs/descriptors/hisapi_v0.9.0-32.2_eo150_en-EN.json) client can read `MON_VTI_u` description which is actually "VTI" monitoring and unit is "UNIT_ML" which corresponds to "mL".
+Given the descriptor `hisapi_v0.9.0-32.2_eo150_en-EN.json` (see https://github.com/eove/his-api/tree/master/docs/descriptors/hisapi_v0.9.0-32.2_eo150_en-EN.json) client can read `MON_VTI_u` description which is actually "VTI" monitoring and unit is "UNIT_ML" which corresponds to "mL".
 
 A descriptor filename is composed of `hisapi_v<his api version>-<module api version>_<product type>_<locale>.json`.
 Most of these information can be retrieved with [GET_INFORMATION message](#get_information-message) and its `GET_INFORMATION_SUCCEEDED` response.
@@ -141,7 +141,7 @@ As a prerequisite, USB cable must be plugged on micro USB port.
 
 Trigger Accessory Mode according to https://source.android.com/devices/accessories/aoa.
 
-Reference implementation in [accessoryModeConfigurator.ts](https://github.com/eove/his-API/blob/master/node-client/lib/usb/accessoryModeConfigurator.ts).
+Reference implementation is located in `accessoryModeConfigurator.ts` (see https://github.com/eove/his-API/blob/master/node-client/lib/usb/accessoryModeConfigurator.ts).
 
 In summary steps are:
 
