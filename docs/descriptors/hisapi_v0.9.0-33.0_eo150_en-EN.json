@@ -1,0 +1,1342 @@
+{
+  "apiVersion": "0.9.0",
+  "moduleApiVersion": "33.0",
+  "productType": "eo150",
+  "monitorings": {
+    "MON_PEEP_u": {
+      "label": "PEEP",
+      "unit": "UNIT_MB"
+    },
+    "MON_PIP_u": {
+      "label": "PIP",
+      "unit": "UNIT_MB"
+    },
+    "MON_VTI_u": {
+      "label": "VTI",
+      "unit": "UNIT_ML"
+    },
+    "MON_VTE_u": {
+      "label": "VTE",
+      "unit": "UNIT_ML"
+    },
+    "MON_RATE_u": {
+      "label": "Res. Rate",
+      "unit": "UNIT_BEAT_PER_MINUTE"
+    },
+    "MON_I_TIME_u": {
+      "label": "Insp. Time",
+      "unit": "UNIT_SEC"
+    },
+    "MON_E_TIME_u": {
+      "label": "Exp. Time",
+      "unit": "UNIT_SEC"
+    },
+    "MON_I_E_NUM_u": {
+      "label": "I/E"
+    },
+    "MON_VM_u": {
+      "label": "MV Insp.",
+      "unit": "UNIT_L_PER_MIN"
+    },
+    "MON_FLOW_MAX_u": {
+      "label": "I Peak Flow",
+      "unit": "UNIT_L_PER_MIN"
+    },
+    "MON_FLOW_MIN_u": {
+      "label": "E Peak Flow",
+      "unit": "UNIT_L_PER_MIN"
+    },
+    "MON_LEAK_u": {
+      "label": "Leak",
+      "unit": "UNIT_L_PER_MIN"
+    },
+    "MON_FIO2_u": {
+      "label": "FIO2",
+      "unit": "UNIT_PERCENT"
+    },
+    "MON_ETCO2_u": {
+      "label": "PCO2",
+      "unit": "UNIT_MMHG"
+    },
+    "MON_SPO2_u": {
+      "label": "SPO2",
+      "unit": "UNIT_PERCENT"
+    },
+    "MON_HR_u": {
+      "label": "Pulse Rate",
+      "unit": "UNIT_BEAT_PER_MINUTE"
+    }
+  },
+  "modes": {
+    "SET_VAC": {
+      "label": "(A)VCV",
+      "settings": {
+        "SET_VAC_Vol": {
+          "label": "VT",
+          "unit": "UNIT_ML"
+        },
+        "SET_VAC_Peep": {
+          "label": "PEEP",
+          "unit": "UNIT_MB"
+        },
+        "SET_VAC_Flow_Ramp": {
+          "label": "Flow Slope"
+        },
+        "SET_VAC_Rate": {
+          "label": "Rate",
+          "unit": "UNIT_BEAT_PER_MIN"
+        },
+        "SET_VAC_I_Time": {
+          "label": "I Time",
+          "unit": "UNIT_SEC"
+        },
+        "SET_VAC_I_Trig": {
+          "label": "I Trig."
+        }
+      },
+      "alarmSettings": {
+        "SET_VAC_ALARM_P_Min": {
+          "label": "Pres. Min",
+          "unit": "UNIT_MB"
+        },
+        "SET_VAC_ALARM_Disconnection_Timer": {
+          "label": "Disc. Time",
+          "unit": "UNIT_SEC"
+        },
+        "SET_VAC_ALARM_P_Max": {
+          "label": "Pres. Max",
+          "unit": "UNIT_MB"
+        },
+        "SET_VAC_ALARM_Vte_Min": {
+          "label": "VTE Min",
+          "unit": "UNIT_ML"
+        },
+        "SET_VAC_ALARM_Vte_Max": {
+          "label": "VTE Max",
+          "unit": "UNIT_ML"
+        },
+        "SET_VAC_ALARM_Rate_Max": {
+          "label": "Res. Rate Max",
+          "unit": "UNIT_BEAT_PER_MIN"
+        },
+        "SET_VAC_ALARM_FIO2_Min": {
+          "label": "FIO2 Min",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_VAC_ALARM_FIO2_Max": {
+          "label": "FIO2 Max",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_VAC_ALARM_SPO2_Min": {
+          "label": "SPO2 Min",
+          "unit": "UNIT_PERCENT"
+        }
+      }
+    },
+    "SET_VPAC": {
+      "label": "(A)PCV",
+      "settings": {
+        "SET_VPAC_P_Sup": {
+          "label": "Pres. Control.",
+          "unit": "UNIT_MB"
+        },
+        "SET_VPAC_Peep": {
+          "label": "PEEP",
+          "unit": "UNIT_MB"
+        },
+        "SET_VPAC_Press_Ramp": {
+          "label": "Pres. Slope"
+        },
+        "SET_VPAC_Rate": {
+          "label": "Rate",
+          "unit": "UNIT_BEAT_PER_MIN"
+        },
+        "SET_VPAC_I_Time": {
+          "label": "I Time",
+          "unit": "UNIT_SEC"
+        },
+        "SET_VPAC_I_Trig": {
+          "label": "I Trig."
+        },
+        "SET_VPAC_Vt_Target": {
+          "label": "VT Target",
+          "unit": "UNIT_ML"
+        },
+        "SET_VPAC_P_Sup_Max": {
+          "label": "P. Contr. Max",
+          "unit": "UNIT_MB"
+        },
+        "SET_VPAC_Vt_Target_Speed": {
+          "label": "VT Target Speed"
+        }
+      },
+      "alarmSettings": {
+        "SET_VPAC_ALARM_Disconnection_Timer": {
+          "label": "Disc. Time",
+          "unit": "UNIT_SEC"
+        },
+        "SET_VPAC_ALARM_Vti_Min": {
+          "label": "VTI Min",
+          "unit": "UNIT_ML"
+        },
+        "SET_VPAC_ALARM_Vti_Max": {
+          "label": "VTI Max",
+          "unit": "UNIT_ML"
+        },
+        "SET_VPAC_ALARM_Vte_Min": {
+          "label": "VTE Min",
+          "unit": "UNIT_ML"
+        },
+        "SET_VPAC_ALARM_Vte_Max": {
+          "label": "VTE Max",
+          "unit": "UNIT_ML"
+        },
+        "SET_VPAC_ALARM_Vm_Min": {
+          "label": "MV Min",
+          "unit": "UNIT_L_PER_MIN"
+        },
+        "SET_VPAC_ALARM_Rate_Max": {
+          "label": "Res. Rate Max",
+          "unit": "UNIT_BEAT_PER_MIN"
+        },
+        "SET_VPAC_ALARM_FIO2_Min": {
+          "label": "FIO2 Min",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_VPAC_ALARM_FIO2_Max": {
+          "label": "FIO2 Max",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_VPAC_ALARM_SPO2_Min": {
+          "label": "SPO2 Min",
+          "unit": "UNIT_PERCENT"
+        }
+      }
+    },
+    "SET_AI": {
+      "label": "PSV",
+      "settings": {
+        "SET_AI_P_Sup": {
+          "label": "Pres. Support",
+          "unit": "UNIT_MB"
+        },
+        "SET_AI_Peep": {
+          "label": "PEEP",
+          "unit": "UNIT_MB"
+        },
+        "SET_AI_Press_Ramp": {
+          "label": "Pres. Slope"
+        },
+        "SET_AI_Rate": {
+          "label": "Rate",
+          "unit": "UNIT_BEAT_PER_MIN"
+        },
+        "SET_AI_I_Trig": {
+          "label": "I Trig."
+        },
+        "SET_AI_E_Trig": {
+          "label": "Exp. Trig.",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_AI_Backup_I_Time": {
+          "label": "Backup I Time",
+          "unit": "UNIT_SEC"
+        },
+        "SET_AI_I_Time_Min": {
+          "label": "I Time Min",
+          "unit": "UNIT_SEC"
+        },
+        "SET_AI_I_Time_Max": {
+          "label": "I Time Max",
+          "unit": "UNIT_SEC"
+        }
+      },
+      "alarmSettings": {
+        "SET_AI_ALARM_Disconnection_Timer": {
+          "label": "Disc. Time",
+          "unit": "UNIT_SEC"
+        },
+        "SET_AI_ALARM_Vti_Min": {
+          "label": "VTI Min",
+          "unit": "UNIT_ML"
+        },
+        "SET_AI_ALARM_Vti_Max": {
+          "label": "VTI Max",
+          "unit": "UNIT_ML"
+        },
+        "SET_AI_ALARM_Vte_Min": {
+          "label": "VTE Min",
+          "unit": "UNIT_ML"
+        },
+        "SET_AI_ALARM_Vte_Max": {
+          "label": "VTE Max",
+          "unit": "UNIT_ML"
+        },
+        "SET_AI_ALARM_Vm_Min": {
+          "label": "MV Min",
+          "unit": "UNIT_L_PER_MIN"
+        },
+        "SET_AI_ALARM_Rate_Min": {
+          "label": "Res. Rate Min",
+          "unit": "UNIT_BEAT_PER_MIN"
+        },
+        "SET_AI_ALARM_Rate_Max": {
+          "label": "Res. Rate Max",
+          "unit": "UNIT_BEAT_PER_MIN"
+        },
+        "SET_AI_ALARM_FIO2_Min": {
+          "label": "FIO2 Min",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_AI_ALARM_FIO2_Max": {
+          "label": "FIO2 Max",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_AI_ALARM_SPO2_Min": {
+          "label": "SPO2 Min",
+          "unit": "UNIT_PERCENT"
+        }
+      }
+    },
+    "SET_AIVR": {
+      "label": "PSV VT",
+      "settings": {
+        "SET_AIVR_Vol": {
+          "label": "Vol. Target",
+          "unit": "UNIT_ML"
+        },
+        "SET_AIVR_Psup_Min": {
+          "label": "Pres Sup Min",
+          "unit": "UNIT_MB"
+        },
+        "SET_AIVR_P_Sup_Max": {
+          "label": "Pres Sup Max",
+          "unit": "UNIT_MB"
+        },
+        "SET_AIVR_Peep": {
+          "label": "PEEP",
+          "unit": "UNIT_MB"
+        },
+        "SET_AIVR_Press_Ramp": {
+          "label": "Pres. Slope"
+        },
+        "SET_AIVR_Rate": {
+          "label": "Rate",
+          "unit": "UNIT_BEAT_PER_MIN"
+        },
+        "SET_AIVR_I_Trig": {
+          "label": "I Trig."
+        },
+        "SET_AIVR_E_Trig": {
+          "label": "E Trig.",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_AIVR_Vt_Target_Speed": {
+          "label": "VT Target Speed"
+        },
+        "SET_AIVR_Backup_I_Time": {
+          "label": "Backup I Time",
+          "unit": "UNIT_SEC"
+        },
+        "SET_AIVR_I_Time_Min": {
+          "label": "I Time Min",
+          "unit": "UNIT_SEC"
+        },
+        "SET_AIVR_I_Time_Max": {
+          "label": "I Time Max",
+          "unit": "UNIT_SEC"
+        }
+      },
+      "alarmSettings": {
+        "SET_AIVR_ALARM_Disconnection_Timer": {
+          "label": "Disc. Time",
+          "unit": "UNIT_SEC"
+        },
+        "SET_AIVR_ALARM_Vti_Min": {
+          "label": "VTI Min",
+          "unit": "UNIT_ML"
+        },
+        "SET_AIVR_ALARM_Vti_Max": {
+          "label": "VTI Max",
+          "unit": "UNIT_ML"
+        },
+        "SET_AIVR_ALARM_Vte_Min": {
+          "label": "VTE Min",
+          "unit": "UNIT_ML"
+        },
+        "SET_AIVR_ALARM_Vte_Max": {
+          "label": "VTE Max",
+          "unit": "UNIT_ML"
+        },
+        "SET_AIVR_ALARM_Vm_Min": {
+          "label": "MV Min",
+          "unit": "UNIT_L_PER_MIN"
+        },
+        "SET_AIVR_ALARM_Rate_Min": {
+          "label": "Res. Rate Min",
+          "unit": "UNIT_BEAT_PER_MIN"
+        },
+        "SET_AIVR_ALARM_Rate_Max": {
+          "label": "Res. Rate Max",
+          "unit": "UNIT_BEAT_PER_MIN"
+        },
+        "SET_AIVR_ALARM_FIO2_Min": {
+          "label": "FIO2 Min",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_AIVR_ALARM_FIO2_Max": {
+          "label": "FIO2 Max",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_AIVR_ALARM_SPO2_Min": {
+          "label": "SPO2 Min",
+          "unit": "UNIT_PERCENT"
+        }
+      }
+    },
+    "SET_VSIMV": {
+      "label": "V-SIMV",
+      "settings": {
+        "SET_VSIMV_Vol": {
+          "label": "VT",
+          "unit": "UNIT_ML"
+        },
+        "SET_VSIMV_P_Sup": {
+          "label": "Pres. Support",
+          "unit": "UNIT_MB"
+        },
+        "SET_VSIMV_Peep": {
+          "label": "PEEP",
+          "unit": "UNIT_MB"
+        },
+        "SET_VSIMV_Press_Ramp": {
+          "label": "Pres. Slope"
+        },
+        "SET_VSIMV_Rate": {
+          "label": "Rate",
+          "unit": "UNIT_BEAT_PER_MIN"
+        },
+        "SET_VSIMV_I_Time": {
+          "label": "I Time",
+          "unit": "UNIT_SEC"
+        },
+        "SET_VSIMV_I_Trig": {
+          "label": "I Trig."
+        },
+        "SET_VSIMV_E_Trig": {
+          "label": "E Trig.",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_VSIMV_I_Time_Min": {
+          "label": "I Time Min",
+          "unit": "UNIT_SEC"
+        },
+        "SET_VSIMV_I_Time_Max": {
+          "label": "I Time Max",
+          "unit": "UNIT_SEC"
+        }
+      },
+      "alarmSettings": {
+        "SET_VSIMV_ALARM_P_Min": {
+          "label": "Pres. Min",
+          "unit": "UNIT_MB"
+        },
+        "SET_VSIMV_ALARM_Disconnection_Timer": {
+          "label": "Disc. Time",
+          "unit": "UNIT_SEC"
+        },
+        "SET_VSIMV_ALARM_P_Max": {
+          "label": "Pres. Max",
+          "unit": "UNIT_MB"
+        },
+        "SET_VSIMV_ALARM_Vti_Min": {
+          "label": "VTI Min",
+          "unit": "UNIT_ML"
+        },
+        "SET_VSIMV_ALARM_Vti_Max": {
+          "label": "VTI Max",
+          "unit": "UNIT_ML"
+        },
+        "SET_VSIMV_ALARM_Vte_Min": {
+          "label": "VTE Min",
+          "unit": "UNIT_ML"
+        },
+        "SET_VSIMV_ALARM_Vte_Max": {
+          "label": "VTE Max",
+          "unit": "UNIT_ML"
+        },
+        "SET_VSIMV_ALARM_Vm_Min": {
+          "label": "MV Min",
+          "unit": "UNIT_L_PER_MIN"
+        },
+        "SET_VSIMV_ALARM_Rate_Max": {
+          "label": "Res. Rate Max",
+          "unit": "UNIT_BEAT_PER_MIN"
+        },
+        "SET_VSIMV_ALARM_FIO2_Min": {
+          "label": "FIO2 Min",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_VSIMV_ALARM_FIO2_Max": {
+          "label": "FIO2 Max",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_VSIMV_ALARM_SPO2_Min": {
+          "label": "SPO2 Min",
+          "unit": "UNIT_PERCENT"
+        }
+      }
+    },
+    "SET_PSIMV": {
+      "label": "P-SIMV",
+      "settings": {
+        "SET_PSIMV_P_Con": {
+          "label": "Pres. Control.",
+          "unit": "UNIT_MB"
+        },
+        "SET_PSIMV_P_Sup": {
+          "label": "Pres. Support",
+          "unit": "UNIT_MB"
+        },
+        "SET_PSIMV_Peep": {
+          "label": "PEEP",
+          "unit": "UNIT_MB"
+        },
+        "SET_PSIMV_Press_Ramp": {
+          "label": "Pres. Slope"
+        },
+        "SET_PSIMV_Rate": {
+          "label": "Rate",
+          "unit": "UNIT_BEAT_PER_MIN"
+        },
+        "SET_PSIMV_I_Time": {
+          "label": "I Time",
+          "unit": "UNIT_SEC"
+        },
+        "SET_PSIMV_I_Trig": {
+          "label": "I Trig."
+        },
+        "SET_PSIMV_E_Trig": {
+          "label": "E Trig.",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_PSIMV_I_Time_Min": {
+          "label": "I Time Min",
+          "unit": "UNIT_SEC"
+        },
+        "SET_PSIMV_I_Time_Max": {
+          "label": "I Time Max",
+          "unit": "UNIT_SEC"
+        }
+      },
+      "alarmSettings": {
+        "SET_PSIMV_ALARM_Disconnection_Timer": {
+          "label": "Disc. Time",
+          "unit": "UNIT_SEC"
+        },
+        "SET_PSIMV_ALARM_Vti_Min": {
+          "label": "VTI Min",
+          "unit": "UNIT_ML"
+        },
+        "SET_PSIMV_ALARM_Vti_Max": {
+          "label": "VTI Max",
+          "unit": "UNIT_ML"
+        },
+        "SET_PSIMV_ALARM_Vte_Min": {
+          "label": "VTE Min",
+          "unit": "UNIT_ML"
+        },
+        "SET_PSIMV_ALARM_Vte_Max": {
+          "label": "VTE Max",
+          "unit": "UNIT_ML"
+        },
+        "SET_PSIMV_ALARM_Vm_Min": {
+          "label": "MV Min",
+          "unit": "UNIT_L_PER_MIN"
+        },
+        "SET_PSIMV_ALARM_Rate_Max": {
+          "label": "Res. Rate Max",
+          "unit": "UNIT_BEAT_PER_MIN"
+        },
+        "SET_PSIMV_ALARM_FIO2_Min": {
+          "label": "FIO2 Min",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_PSIMV_ALARM_FIO2_Max": {
+          "label": "FIO2 Max",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_PSIMV_ALARM_SPO2_Min": {
+          "label": "SPO2 Min",
+          "unit": "UNIT_PERCENT"
+        }
+      }
+    },
+    "SET_MPV": {
+      "label": "MPV",
+      "settings": {
+        "SET_MPV_Vol": {
+          "label": "VT",
+          "unit": "UNIT_ML"
+        },
+        "SET_MPV_Flow_Ramp": {
+          "label": "Flow Slope"
+        },
+        "SET_MPV_Rate": {
+          "label": "Rate",
+          "unit": "UNIT_BEAT_PER_MIN"
+        },
+        "SET_MPV_I_Time": {
+          "label": "I Time",
+          "unit": "UNIT_SEC"
+        },
+        "SET_MPV_I_Trig": {
+          "label": "I Trig."
+        },
+        "SET_MPV_Bias_Flow": {
+          "label": "Bias Flow",
+          "unit": "UNIT_L_PER_MIN"
+        }
+      },
+      "alarmSettings": {
+        "SET_MPV_ALARM_P_Min": {
+          "label": "Pres. Min",
+          "unit": "UNIT_MB"
+        },
+        "SET_MPV_ALARM_Disconnection_Timer": {
+          "label": "Disc. Time",
+          "unit": "UNIT_SEC"
+        },
+        "SET_MPV_ALARM_P_Max": {
+          "label": "Pres. Max",
+          "unit": "UNIT_MB"
+        },
+        "SET_MPV_ALARM_Vm_Min": {
+          "label": "MV Min",
+          "unit": "UNIT_L_PER_MIN"
+        },
+        "SET_MPV_ALARM_FIO2_Min": {
+          "label": "FIO2 Min",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_MPV_ALARM_FIO2_Max": {
+          "label": "FIO2 Max",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_MPV_ALARM_SPO2_Min": {
+          "label": "SPO2 Min",
+          "unit": "UNIT_PERCENT"
+        }
+      }
+    },
+    "SET_MPP": {
+      "label": "MPP",
+      "settings": {
+        "SET_MPP_P_Sup": {
+          "label": "Pres. control.",
+          "unit": "UNIT_MB"
+        },
+        "SET_MPP_Press_Ramp": {
+          "label": "Pres. Slope"
+        },
+        "SET_MPP_Rate": {
+          "label": "Rate",
+          "unit": "UNIT_BEAT_PER_MIN"
+        },
+        "SET_MPP_I_Time": {
+          "label": "I Time",
+          "unit": "UNIT_SEC"
+        },
+        "SET_MPP_I_Trig": {
+          "label": "I Trig."
+        },
+        "SET_MPP_Bias_Flow": {
+          "label": "Bias Flow",
+          "unit": "UNIT_L_PER_MIN"
+        }
+      },
+      "alarmSettings": {
+        "SET_MPP_ALARM_Disconnection_Timer": {
+          "label": "Disc. Time",
+          "unit": "UNIT_SEC"
+        },
+        "SET_MPP_ALARM_Vm_Min": {
+          "label": "MV Min",
+          "unit": "UNIT_L_PER_MIN"
+        },
+        "SET_MPP_ALARM_FIO2_Min": {
+          "label": "FIO2 Min",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_MPP_ALARM_FIO2_Max": {
+          "label": "FIO2 Max",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_MPP_ALARM_SPO2_Min": {
+          "label": "SPO2 Min",
+          "unit": "UNIT_PERCENT"
+        }
+      }
+    },
+    "SET_CPAP": {
+      "label": "CPAP",
+      "settings": {
+        "SET_CPAP_Press": {
+          "label": "CPAP Pressure",
+          "unit": "UNIT_MB"
+        }
+      },
+      "alarmSettings": {
+        "SET_CPAP_ALARM_Disconnection_Timer": {
+          "label": "Disc. Time",
+          "unit": "UNIT_SEC"
+        },
+        "SET_CPAP_ALARM_Vti_Min": {
+          "label": "VTI Min",
+          "unit": "UNIT_ML"
+        },
+        "SET_CPAP_ALARM_Vm_Min": {
+          "label": "MV Min",
+          "unit": "UNIT_L_PER_MIN"
+        },
+        "SET_CPAP_ALARM_Leak_Max": {
+          "label": "Leak Max",
+          "unit": "UNIT_L_PER_MIN"
+        },
+        "SET_CPAP_ALARM_Rate_Min": {
+          "label": "Res. Rate Min",
+          "unit": "UNIT_BEAT_PER_MIN"
+        },
+        "SET_CPAP_ALARM_FIO2_Min": {
+          "label": "FIO2 Min",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_CPAP_ALARM_FIO2_Max": {
+          "label": "FIO2 Max",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_CPAP_ALARM_SPO2_Min": {
+          "label": "SPO2 Min",
+          "unit": "UNIT_PERCENT"
+        }
+      }
+    },
+    "SET_ST": {
+      "label": "S(T)",
+      "settings": {
+        "SET_ST_I_Pap": {
+          "label": "IPAP",
+          "unit": "UNIT_MB"
+        },
+        "SET_ST_E_Pap": {
+          "label": "EPAP",
+          "unit": "UNIT_MB"
+        },
+        "SET_ST_Press_Ramp": {
+          "label": "Press Slope"
+        },
+        "SET_ST_Rate": {
+          "label": "Rate",
+          "unit": "UNIT_BEAT_PER_MIN"
+        },
+        "SET_ST_I_Trig": {
+          "label": "I Trig."
+        },
+        "SET_ST_E_Trig": {
+          "label": "E Trig.",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_ST_Backup_I_Time": {
+          "label": "Backup I Time",
+          "unit": "UNIT_SEC"
+        },
+        "SET_ST_I_Time_Min": {
+          "label": "I Time Min",
+          "unit": "UNIT_SEC"
+        },
+        "SET_ST_I_Time_Max": {
+          "label": "I Time Max",
+          "unit": "UNIT_SEC"
+        }
+      },
+      "alarmSettings": {
+        "SET_ST_ALARM_Disconnection_Timer": {
+          "label": "Disc. Time",
+          "unit": "UNIT_SEC"
+        },
+        "SET_ST_ALARM_Vti_Min": {
+          "label": "VTI Min",
+          "unit": "UNIT_ML"
+        },
+        "SET_ST_ALARM_Vm_Min": {
+          "label": "MV Min",
+          "unit": "UNIT_L_PER_MIN"
+        },
+        "SET_ST_ALARM_Rate_Min": {
+          "label": "Res. Rate Min",
+          "unit": "UNIT_BEAT_PER_MIN"
+        },
+        "SET_ST_ALARM_Rate_Max": {
+          "label": "Res. Rate Max",
+          "unit": "UNIT_BEAT_PER_MIN"
+        },
+        "SET_ST_ALARM_Leak_Max": {
+          "label": "Leak Max",
+          "unit": "UNIT_L_PER_MIN"
+        },
+        "SET_ST_ALARM_FIO2_Min": {
+          "label": "FIO2 Min",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_ST_ALARM_FIO2_Max": {
+          "label": "FIO2 Max",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_ST_ALARM_SPO2_Min": {
+          "label": "SPO2 Min",
+          "unit": "UNIT_PERCENT"
+        }
+      }
+    },
+    "SET_PAC": {
+      "label": "PAC",
+      "settings": {
+        "SET_PAC_I_Pap": {
+          "label": "IPAP",
+          "unit": "UNIT_MB"
+        },
+        "SET_PAC_E_Pap": {
+          "label": "EPAP",
+          "unit": "UNIT_MB"
+        },
+        "SET_PAC_Press_Ramp": {
+          "label": "Pres. Slope"
+        },
+        "SET_PAC_Rate": {
+          "label": "Rate",
+          "unit": "UNIT_BEAT_PER_MIN"
+        },
+        "SET_PAC_I_Time": {
+          "label": "I Time",
+          "unit": "UNIT_SEC"
+        },
+        "SET_PAC_I_Trig": {
+          "label": "I Trig."
+        },
+        "SET_PAC_Vt_Target": {
+          "label": "VT Target",
+          "unit": "UNIT_ML"
+        },
+        "SET_PAC_I_Pap_Max": {
+          "label": "IPAP Max",
+          "unit": "UNIT_MB"
+        },
+        "SET_PAC_Vt_Target_Speed": {
+          "label": "VT Target Speed"
+        }
+      },
+      "alarmSettings": {
+        "SET_PAC_ALARM_Disconnection_Timer": {
+          "label": "Disc. Time",
+          "unit": "UNIT_SEC"
+        },
+        "SET_PAC_ALARM_Vti_Min": {
+          "label": "VTI Min",
+          "unit": "UNIT_ML"
+        },
+        "SET_PAC_ALARM_Vm_Min": {
+          "label": "MV Min",
+          "unit": "UNIT_L_PER_MIN"
+        },
+        "SET_PAC_ALARM_Rate_Max": {
+          "label": "Res. Rate Max",
+          "unit": "UNIT_BEAT_PER_MIN"
+        },
+        "SET_PAC_ALARM_Leak_Max": {
+          "label": "Leak Max",
+          "unit": "UNIT_L_PER_MIN"
+        },
+        "SET_PAC_ALARM_FIO2_Min": {
+          "label": "FIO2 Min",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_PAC_ALARM_FIO2_Max": {
+          "label": "FIO2 Max",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_PAC_ALARM_SPO2_Min": {
+          "label": "SPO2 Min",
+          "unit": "UNIT_PERCENT"
+        }
+      }
+    },
+    "SET_VTS": {
+      "label": "VTS",
+      "settings": {
+        "SET_VTS_Vol": {
+          "label": "Vol. Target",
+          "unit": "UNIT_ML"
+        },
+        "SET_VTS_I_Pap_Min": {
+          "label": "IPAP Min",
+          "unit": "UNIT_MB"
+        },
+        "SET_VTS_P_Max": {
+          "label": "IPAP Max",
+          "unit": "UNIT_MB"
+        },
+        "SET_VTS_E_Pap": {
+          "label": "EPAP",
+          "unit": "UNIT_MB"
+        },
+        "SET_VTS_Press_Ramp": {
+          "label": "Pres. Slope"
+        },
+        "SET_VTS_Rate": {
+          "label": "Rate",
+          "unit": "UNIT_BEAT_PER_MIN"
+        },
+        "SET_VTS_I_Trig": {
+          "label": "I Trig."
+        },
+        "SET_VTS_E_Trig": {
+          "label": "Exp. Trig.",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_VTS_Backup_I_Time": {
+          "label": "Backup I Time",
+          "unit": "UNIT_SEC"
+        },
+        "SET_VTS_Vt_Target_Speed": {
+          "label": "VT Target Speed"
+        },
+        "SET_VTS_I_Time_Min": {
+          "label": "I Time Min",
+          "unit": "UNIT_SEC"
+        },
+        "SET_VTS_I_Time_Max": {
+          "label": "I Time Max",
+          "unit": "UNIT_SEC"
+        }
+      },
+      "alarmSettings": {
+        "SET_VTS_ALARM_Disconnection_Timer": {
+          "label": "Disc. Time",
+          "unit": "UNIT_SEC"
+        },
+        "SET_VTS_ALARM_Vti_Min": {
+          "label": "VTI Min",
+          "unit": "UNIT_ML"
+        },
+        "SET_VTS_ALARM_Vm_Min": {
+          "label": "MV Min",
+          "unit": "UNIT_L_PER_MIN"
+        },
+        "SET_VTS_ALARM_Rate_Min": {
+          "label": "Res. Rate Min",
+          "unit": "UNIT_BEAT_PER_MIN"
+        },
+        "SET_VTS_ALARM_Rate_Max": {
+          "label": "Res. Rate Max",
+          "unit": "UNIT_BEAT_PER_MIN"
+        },
+        "SET_VTS_ALARM_Leak_Max": {
+          "label": "Leak Max",
+          "unit": "UNIT_L_PER_MIN"
+        },
+        "SET_VTS_ALARM_FIO2_Min": {
+          "label": "FIO2 Min",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_VTS_ALARM_FIO2_Max": {
+          "label": "FIO2 Max",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_VTS_ALARM_SPO2_Min": {
+          "label": "SPO2 Min",
+          "unit": "UNIT_PERCENT"
+        }
+      }
+    },
+    "SET_CFLOW": {
+      "label": "C-FLOW",
+      "settings": {
+        "SET_CFLOW_Flow": {
+          "label": "Flow",
+          "unit": "UNIT_L_PER_MIN"
+        },
+        "SET_CFLOW_P_Max": {
+          "label": "Press. Max",
+          "unit": "UNIT_MB"
+        }
+      },
+      "alarmSettings": {
+        "SET_CFLOW_ALARM_P_Min": {
+          "label": "P. Min",
+          "unit": "UNIT_MB"
+        },
+        "SET_CFLOW_ALARM_Disconnection_Timer": {
+          "label": "Disc. Time",
+          "unit": "UNIT_SEC"
+        },
+        "SET_CFLOW_ALARM_FIO2_Min": {
+          "label": "FIO2 Min",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_CFLOW_ALARM_FIO2_Max": {
+          "label": "FIO2 Max",
+          "unit": "UNIT_PERCENT"
+        },
+        "SET_CFLOW_ALARM_SPO2_Min": {
+          "label": "SPO2 Min",
+          "unit": "UNIT_PERCENT"
+        }
+      }
+    }
+  },
+  "alarms": {
+    "ALARM_DISCONNECTION": {
+      "label": "DISCONNECTION",
+      "priority": "HIGH",
+      "category": "INTERFACE"
+    },
+    "ALARM_HIGH_PRESSURE_PRES": {
+      "label": "HIGH PRES.",
+      "priority": "HIGH",
+      "category": "PATIENT"
+    },
+    "ALARM_HIGH_PRESSURE_VOL": {
+      "label": "HIGH PRES.",
+      "priority": "HIGH",
+      "category": "PATIENT"
+    },
+    "ALARM_SPEED_FAULT": {
+      "label": "SPEED FAULT",
+      "priority": "HIGH",
+      "category": "TECHNICAL"
+    },
+    "ALARM_HIGH_VTI": {
+      "label": "HIGH VTI",
+      "priority": "HIGH",
+      "category": "PATIENT"
+    },
+    "ALARM_LOW_VTI": {
+      "label": "LOW VTI",
+      "priority": "HIGH",
+      "category": "PATIENT"
+    },
+    "ALARM_LOW_VTE": {
+      "label": "LOW VTE",
+      "priority": "LOW",
+      "category": "PATIENT"
+    },
+    "ALARM_HIGH_VTE": {
+      "label": "HIGH VTE",
+      "priority": "LOW",
+      "category": "PATIENT"
+    },
+    "ALARM_LOW_VM": {
+      "label": "LOW MV",
+      "priority": "LOW",
+      "category": "PATIENT"
+    },
+    "ALARM_APNEA_LOW_RATE": {
+      "label": "APNEA/LOW RATE",
+      "priority": "LOW",
+      "category": "PATIENT"
+    },
+    "ALARM_HIGH_RATE": {
+      "label": "HIGH RES. RATE",
+      "priority": "LOW",
+      "category": "PATIENT"
+    },
+    "ALARM_AC_POWER_FAIL": {
+      "label": "AC POWER LOSS",
+      "priority": "LOW",
+      "category": "SUPPLY"
+    },
+    "ALARM_DC_POWER_FAIL": {
+      "label": "DC POWER LOSS",
+      "priority": "LOW",
+      "category": "SUPPLY"
+    },
+    "ALARM_SUPPLY_FAIL": {
+      "label": "SUPPLY FAIL",
+      "priority": "LOW",
+      "category": "TECHNICAL"
+    },
+    "ALARM_BATTERY_UNDER_2H": {
+      "label": "Battery < 2h",
+      "priority": "LOW",
+      "category": "SUPPLY"
+    },
+    "ALARM_LOW_BATTERY": {
+      "label": "BATTERY LOW",
+      "priority": "LOW",
+      "category": "SUPPLY"
+    },
+    "ALARM_END_OF_BATTERY": {
+      "label": "BATTERY EMPTY",
+      "priority": "HIGH",
+      "category": "SUPPLY"
+    },
+    "ALARM_BATTERY_FAIL": {
+      "label": "BATTERY FAIL",
+      "priority": "LOW",
+      "category": "TECHNICAL"
+    },
+    "ALARM_BATTERY_FAIL_2": {
+      "label": "BATTERY FAIL",
+      "priority": "LOW",
+      "category": "TECHNICAL"
+    },
+    "ALARM_BUZZER_FAIL": {
+      "label": "BUZZER FAIL",
+      "priority": "LOW",
+      "category": "TECHNICAL"
+    },
+    "ALARM_BUZZER_BATTERY_FAIL": {
+      "label": "BUZZER BAT. FAIL",
+      "priority": "LOW",
+      "category": "TECHNICAL"
+    },
+    "ALARM_TECHNICAL_PROBLEM": {
+      "label": "CPU FAIL",
+      "priority": "LOW",
+      "category": "TECHNICAL"
+    },
+    "ALARM_CHECK_SETTINGS": {
+      "label": "CHECK SETTINGS",
+      "priority": "LOW",
+      "category": "TECHNICAL"
+    },
+    "ALARM_SAVED_PARAMETER_LOST": {
+      "label": "MEMORY FAIL",
+      "priority": "HIGH",
+      "category": "TECHNICAL"
+    },
+    "ALARM_SAVED_PARAMETER_LOST_NON_CRITICAL": {
+      "label": "SAVED DEVICE DATA LOST",
+      "priority": "LOW",
+      "category": "TECHNICAL"
+    },
+    "ALARM_PROXIMAL_FAIL": {
+      "label": "PROX. FAIL",
+      "priority": "HIGH",
+      "category": "TECHNICAL"
+    },
+    "ALARM_PROXI_DISCONNECTION": {
+      "label": "PROX. DISCONNECTION",
+      "priority": "HIGH",
+      "category": "INTERFACE"
+    },
+    "ALARM_VALVE_DISCONNECTED": {
+      "label": "VALVE DISCONNECTED",
+      "priority": "HIGH",
+      "category": "INTERFACE"
+    },
+    "ALARM_VOLUME_OFF_RANGE": {
+      "label": "VOL. OUT OF RANGE",
+      "priority": "HIGH",
+      "category": "PATIENT"
+    },
+    "ALARM_REMOTE_ALARM_FAIL": {
+      "label": "REMOTE FAIL",
+      "priority": "LOW",
+      "category": "TECHNICAL"
+    },
+    "ALARM_KEYBOARD_FAIL": {
+      "label": "KEYBOARD FAIL",
+      "priority": "LOW",
+      "category": "TECHNICAL"
+    },
+    "ALARM_BAT_TEMP": {
+      "label": "BAT. TEMP. HIGH",
+      "priority": "LOW",
+      "category": "SUPPLY"
+    },
+    "ALARM_BAT_CHARGE_PAUSE": {
+      "label": "BAT. CHARGE PAUSE (T°>)",
+      "priority": "LOW",
+      "category": "SUPPLY"
+    },
+    "ALARM_BLOWER_OVERHEAT": {
+      "label": "BLOWER OVERHEAT",
+      "priority": "HIGH",
+      "category": "TECHNICAL"
+    },
+    "ALARM_BLOWER_FAIL": {
+      "label": "BLOWER FAIL",
+      "priority": "HIGH",
+      "category": "TECHNICAL"
+    },
+    "ALARM_OCCLUSION": {
+      "label": "OCCLUSION",
+      "priority": "HIGH",
+      "category": "INTERFACE"
+    },
+    "ALARM_INSP_FLOW_FAIL": {
+      "label": "INSP. FLOW FAIL",
+      "priority": "HIGH",
+      "category": "TECHNICAL"
+    },
+    "ALARM_SECURITY_PRESSURE_FAIL": {
+      "label": "SEC. PRES. FAIL",
+      "priority": "HIGH",
+      "category": "TECHNICAL"
+    },
+    "ALARM_LEAKAGE": {
+      "label": "VALVE LEAK",
+      "priority": "HIGH",
+      "category": "INTERFACE"
+    },
+    "ALARM_LOW_FIO2": {
+      "label": "LOW FIO2",
+      "priority": "LOW",
+      "category": "INTERFACE"
+    },
+    "ALARM_HIGH_FIO2": {
+      "label": "HIGH FIO2",
+      "priority": "LOW",
+      "category": "INTERFACE"
+    },
+    "ALARM_LOW_SPO2": {
+      "label": "LOW SPO2",
+      "priority": "HIGH",
+      "category": "PATIENT"
+    },
+    "ALARM_HIGH_LEAK": {
+      "label": "HIGH LEAK",
+      "priority": "LOW",
+      "category": "INTERFACE"
+    },
+    "ALARM_VOLUNTARY_STOP": {
+      "label": "VENTILATION STOP",
+      "priority": "HIGH",
+      "category": "INTERFACE"
+    },
+    "ALARM_VALVE_FAIL": {
+      "label": "VALVE FAIL",
+      "priority": "HIGH",
+      "category": "TECHNICAL"
+    },
+    "ALARM_REBREATHING": {
+      "label": "REBREATHING",
+      "priority": "HIGH",
+      "category": "INTERFACE"
+    },
+    "ALARM_PEEP": {
+      "label": "PEEP OUT OF RANGE",
+      "priority": "HIGH",
+      "category": "PATIENT"
+    },
+    "ALARM_EXPI_FLOW_FAIL": {
+      "label": "EXPI. FLOW FAIL",
+      "priority": "HIGH",
+      "category": "TECHNICAL"
+    },
+    "ALARM_PRESS_ABS_FAIL": {
+      "label": "ABS. PRES. FAIL",
+      "priority": "HIGH",
+      "category": "TECHNICAL"
+    },
+    "ALARM_REVERSED_IE": {
+      "label": "Reversed I/E set",
+      "priority": "HIGH",
+      "category": "PATIENT"
+    },
+    "ALARM_EXPI_FLOW_DISCONNECTED": {
+      "label": "Expi. flow disconnection",
+      "priority": "LOW",
+      "category": "INTERFACE"
+    },
+    "ALARM_CLOSE_O2_SOURCE": {
+      "label": "Close O2 source",
+      "priority": "HIGH",
+      "category": "INTERFACE"
+    },
+    "ALARM_GAUGE_COM_FAIL": {
+      "label": "GAUGE COM. FAIL",
+      "priority": "HIGH",
+      "category": "TECHNICAL"
+    },
+    "ALARM_BATTERY_MAINTENANCE": {
+      "label": "BATTERY MAINTENANCE",
+      "priority": "LOW",
+      "category": "TECHNICAL"
+    },
+    "ALARM_TURBINE_MAINTENANCE": {
+      "label": "TURBINE MAINTENANCE",
+      "priority": "LOW",
+      "category": "TECHNICAL"
+    },
+    "ALARM_VALVE_MAINTENANCE": {
+      "label": "EXH. VALVE MAINTENANCE",
+      "priority": "LOW",
+      "category": "TECHNICAL"
+    }
+  },
+  "alarmCategories": {
+    "PATIENT": {
+      "label": "Patient"
+    },
+    "TECHNICAL": {
+      "label": "Technical"
+    },
+    "SUPPLY": {
+      "label": "Supply"
+    },
+    "INTERFACE": {}
+  },
+  "alarmPriorities": {
+    "HIGH": {
+      "label": "High"
+    },
+    "LOW": {
+      "label": "Low"
+    },
+    "NO_PRIORITY": {
+      "label": "No priority"
+    }
+  },
+  "waveforms": {
+    "WAV_PRESS_s": {
+      "label": "Pressure",
+      "unit": "UNIT_MB"
+    },
+    "WAV_FLOW_s": {
+      "label": "Flow",
+      "unit": "UNIT_L_PER_MIN"
+    },
+    "WAV_VOL_u": {
+      "label": "Volume",
+      "unit": "UNIT_ML"
+    }
+  },
+  "units": {
+    "UNIT_MB": {
+      "label": "mbar"
+    },
+    "UNIT_L_PER_MIN": {
+      "label": "L/min"
+    },
+    "UNIT_ML": {
+      "label": "mL"
+    },
+    "UNIT_BEAT_PER_MINUTE": {
+      "label": "bpm"
+    },
+    "UNIT_SEC": {
+      "label": "s"
+    },
+    "UNIT_PERCENT": {
+      "label": "%"
+    },
+    "UNIT_MMHG": {
+      "label": "mmHg"
+    },
+    "UNIT_BEAT_PER_MIN": {
+      "label": "bpm"
+    }
+  }
+}
