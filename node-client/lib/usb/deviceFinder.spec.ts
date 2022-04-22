@@ -1,8 +1,7 @@
 import { isEqual } from 'lodash/fp';
 
 import { DeviceFinder, DeviceFinderCreation } from './deviceFinder';
-import { samples } from '../tests';
-import { createSilentLogger } from '../tools';
+import { samples, createSilentLogger } from '../tests';
 import { FindUsbDevice, FindUsbDevices } from './usbDevice';
 
 describe('Device finder', () => {

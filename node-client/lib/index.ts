@@ -1,3 +1,5 @@
+import path from 'path';
+
 import { HisClient, HisClientCreation } from './hisClient';
 import { createConsoleLogger } from './tools';
 import {
@@ -22,6 +24,7 @@ interface Creation extends Partial<HisClientCreation> {
   accessoryManufacturer?: string;
   accessoryModel?: string;
   readBufferLength?: number;
+  tokenFile?: string;
 }
 
 export function createHisClient(creation: Creation = {}): HisClient {
@@ -39,6 +42,7 @@ export function createHisClient(creation: Creation = {}): HisClient {
     inTimeoutMs = 1000,
     outTimeoutMs = 5000,
     readBufferLength = 10000,
+    tokenFile,
   } = creation;
   const logger = createConsoleLogger({ debugEnabled });
   const findUsbDevice = createFindUsbDevice({ logger });
@@ -63,6 +67,7 @@ export function createHisClient(creation: Creation = {}): HisClient {
     accessoryModel,
     logger,
   });
+  const safeTokenFile = getTokenFile(tokenFile, serialNumber);
   return new HisClient(
     Object.assign(
       {
@@ -73,10 +78,22 @@ export function createHisClient(creation: Creation = {}): HisClient {
         messageLineParser,
         inTimeoutMs,
         outTimeoutMs,
+        tokenFile: safeTokenFile,
       },
       creation
     )
   );
+}
+
+function getTokenFile(
+  fileMaybe: string | undefined,
+  serialNumberMaybe: string | undefined
+): string {
+  if (fileMaybe) {
+    return fileMaybe;
+  }
+  const suffix = serialNumberMaybe ? `-${serialNumberMaybe}` : '';
+  return path.join(process.cwd(), `.token${suffix}`);
 }
 
 export * from './message';

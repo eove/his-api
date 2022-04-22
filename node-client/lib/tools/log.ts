@@ -20,11 +20,3 @@ export function createConsoleLogger(
     debug: debugEnabled ? console.debug.bind(console) : () => undefined,
   };
 }
-
-export function createSilentLogger(): Logger {
-  return {
-    info: () => undefined,
-    error: () => undefined,
-    debug: () => undefined,
-  };
-}

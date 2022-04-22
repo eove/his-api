@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 import { Buffer } from 'buffer';
+import { readFile, writeFile } from 'fs/promises';
 
 import {
   ServerMessageType,
@@ -28,6 +29,7 @@ export interface HisClientCreation {
   messageLineParser: MessageLineParser;
   inTimeoutMs: number;
   outTimeoutMs: number;
+  tokenFile: string;
 }
 
 export enum ClientEventType {
@@ -47,6 +49,7 @@ export class HisClient extends EventEmitter {
   private readonly accessoryConfigurator: AccessoryModeConfigurator;
   private readonly messageLineParser: MessageLineParser;
   private readonly timeouts: UsbTimeouts;
+  private readonly tokenFile: string;
   private disposeFunctions: (() => void)[];
   private device: UsbDevice | undefined;
 
@@ -60,6 +63,7 @@ export class HisClient extends EventEmitter {
       messageLineParser,
       inTimeoutMs,
       outTimeoutMs,
+      tokenFile,
     } = creation;
     this.usbReader = usbReader;
     this.accessoryConfigurator = accessoryConfigurator;
@@ -67,6 +71,7 @@ export class HisClient extends EventEmitter {
     this.deviceFinder = deviceFinder;
     this.messageLineParser = messageLineParser;
     this.timeouts = { in: inTimeoutMs, out: outTimeoutMs };
+    this.tokenFile = tokenFile;
     this.disposeFunctions = [];
     this.listenToUsbReader();
     this.listenToMessageLineParser();
@@ -117,8 +122,26 @@ export class HisClient extends EventEmitter {
 
   private onMessageFromParser(message: Message): void {
     this.emit(ClientEventType.messageReceived, message);
-    if (message.type == ServerMessageType.ping) {
-      this.writeMessage({ type: ClientMessageType.pong });
+    switch (message.type) {
+      case ServerMessageType.ping:
+        this.writeMessage({ type: ClientMessageType.pong });
+        break;
+      case ServerMessageType.startCommunicationSucceeded:
+        this.handleStartCommunicationSucceeded(message);
+        break;
+    }
+  }
+
+  private async handleStartCommunicationSucceeded(message: Message) {
+    const token = message?.payload?.token;
+    if (!token) {
+      return;
+    }
+    try {
+      await writeFile(this.tokenFile, token);
+    } catch (error) {
+      this.logger.error('Error while storing token', error);
+      this.emit(ClientEventType.error, error);
     }
   }
 
@@ -166,6 +189,29 @@ export class HisClient extends EventEmitter {
     this.logger.debug('Disconnecting');
     await this.disconnectSilently();
     this.logger.debug('Device is disconnected');
+  }
+
+  async startCommunication(): Promise<void> {
+    const token = await this.readTokenIfAny();
+    const withPayloadMaybe = token ? { payload: { token } } : {};
+    this.writeMessage(
+      Object.assign(
+        {
+          type: ClientMessageType.startCommunication,
+        },
+        withPayloadMaybe
+      )
+    );
+  }
+
+  private readTokenIfAny(): Promise<string | undefined> {
+    return readFile(this.tokenFile, { encoding: 'utf-8' }).catch((error) => {
+      if (error.code !== 'ENOENT') {
+        this.logger.error('Unexpected error while reading token', error);
+        this.emit(ClientEventType.error, error);
+      }
+      return undefined;
+    });
   }
 
   async writeMessage(message: Message): Promise<void> {

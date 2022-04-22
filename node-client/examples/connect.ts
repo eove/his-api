@@ -27,9 +27,7 @@ async function main(): Promise<void> {
 
   async function onConnected() {
     logger.info('Connected');
-    await client.writeMessage({
-      type: ClientMessageType.startCommunication,
-    });
+    await client.startCommunication();
     await client.writeMessage({
       type: ClientMessageType.getInformation,
       reference: '1',
