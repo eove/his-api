@@ -205,6 +205,7 @@ export class HisClient extends EventEmitter {
   }
 
   private readTokenIfAny(): Promise<string | undefined> {
+    this.logger.debug(`Reading token from ${this.tokenFile}`);
     return readFile(this.tokenFile, { encoding: 'utf-8' }).catch((error) => {
       if (error.code !== 'ENOENT') {
         this.logger.error('Unexpected error while reading token', error);
