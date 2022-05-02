@@ -4,8 +4,7 @@ import {
   AccessoryModeConfigurator,
   AccessoryModeConfiguratorCreation,
 } from './accessoryModeConfigurator';
-import { samples } from '../tests';
-import { createSilentLogger } from '../tools';
+import { samples, createSilentLogger } from '../tests';
 import { UsbDevice } from './usbDevice';
 
 describe('Accessory mode configurator', () => {

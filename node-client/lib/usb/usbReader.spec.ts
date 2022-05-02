@@ -1,5 +1,5 @@
-import { mock } from '../tests';
-import { createSilentLogger, wait } from '../tools';
+import { mock, createSilentLogger } from '../tests';
+import { wait } from '../tools';
 import { UsbDevice } from './usbDevice';
 import { UsbReader, UsbReaderCreation, UsbReaderEvent } from './usbReader';
 

@@ -15,6 +15,7 @@ export enum ClientMessageType {
 
 export enum ServerMessageType {
   ping = 'PING',
+  startCommunicationSucceeded = 'START_COMMUNICATION_SUCCEEDED',
 }
 
 export function serializeMessage(message: Message): Buffer {

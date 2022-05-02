@@ -72,6 +72,7 @@ The main steps a client must perform are:
 
 - trigger the accessory mode on the EO150 station
 - write message to start a high level communication
+- manage a communication token which is required by the server
 - write message in order to subscribe to channels
 - read data from EO150 station
 - respond to EO150 station pings to keep the link alive
@@ -161,10 +162,21 @@ The device leaves this mode automatically when:
 Also note that only one accessory can be connected to an Android device.
 This means you cannot connect two clients to the same server.
 
+### Communication token
+
+When HIS connectivity is toggled on via EOVE-150 user interface, server will generate a **new and unique** communication token.
+This token will not be required before a configured delay (typically 5 min).
+During such delay client can connect, start high level communication and read the token in a response message.
+Client should store this token (in a persistent storage) to be able to connect to the server later.
+When the delay is expired the server will require the token for subsequent connections.
+Note that client stays connected when server starts requiring token, there is no need to reconnect yet.
+
+This token management is further described in [START_COMMUNICATION message](#start_communication-message).
+
 ### Communication ping/pong mechanism
 
-To keep the connection alive, pings are emitted periodicaly by the server (typically every 8s).
-The client shall reply with special [pongs messages](#pong-message) before the timeout (typically 5s).
+To keep the connection alive, pings are emitted periodicaly by the server (typically every 8 s).
+The client shall reply with special [pongs messages](#pong-message) before the timeout (typically 5 s).
 
 Client reads:
 
@@ -243,6 +255,11 @@ As a response, client reads:
 
 This message must be the first one because it starts high level communication with server.
 If client is able to send such message and receive a positive response it basically validates the bidirectional communication.
+Client should store the communication token when server does not require it yet then provide it later upon reconnections.
+
+#### Server does not require a token yet
+
+When HIS connectivity is enabled on EOVE-150 user interface client can connect freely to the server and should store the communication token.
 
 Client writes:
 
@@ -258,12 +275,67 @@ Client reads:
 {
   "type": "START_COMMUNICATION_SUCCEEDED",
   "payload": {
+    "apiVersion": "1.0.0",
+    "token": "eoh_6af83e7c494e47d29c3ddc80ac0df354"
+  }
+}
+```
+
+Notice the `token` property which value should be saved to be able to reconnect later.
+
+#### Server requires a token
+
+When server requires a token, the client should provide the previously exposed token.
+
+Client writes:
+
+```json
+{
+  "type": "START_COMMUNICATION",
+  "payload": {
+    "token": "eoh_6af83e7c494e47d29c3ddc80ac0df354"
+  }
+}
+```
+
+Client reads:
+
+```json
+{
+  "type": "START_COMMUNICATION_SUCCEEDED",
+  "payload": {
     "apiVersion": "1.0.0"
   }
 }
 ```
 
-The succeeded response includes the HIS server API version.
+When server requires a token, note that it will not be sent anymore in payload by server.
+
+#### Succeeded response
+
+Client will usually receive a `START_COMMUNICATION_SUCCEEDED` with HIS server API version and sometimes the token.
+
+#### Failed response
+
+Client can receive a `START_COMMUNICATION_FAILED` response with following reasons:
+
+- `missingToken`: the token is required but not provided by client
+- `invalidToken`: the token is required and provided but tokens do not match
+
+Client might read:
+
+```json
+{
+  "type": "START_COMMUNICATION_FAILED",
+  "payload": {
+    "reason": "missingToken"
+  }
+}
+```
+
+#### Reference implementation
+
+This token management is performed by `HisClient` (see https://github.com/eove/his-api/blob/providing_token/node-client/lib/hisClient.ts). The client exposes the convenient method `startCommunication` which loads a stored token on file system then writes a `START_COMMUNICATION` message. Meanwhile client stores any token in `START_COMMUNICATION_SUCCEEDED` server message in `onMessageFromParser` method.
 
 ### STOP_COMMUNICATION message
 

@@ -1,4 +1,7 @@
 import { EventEmitter } from 'events';
+import { join as joinPath } from 'path';
+import { mkdtemp, rm, writeFile, mkdir, readFile, access } from 'fs/promises';
+import { tmpdir } from 'os';
 
 import {
   accessoryInterfaceNumber,
@@ -6,8 +9,8 @@ import {
   HisClient,
   HisClientCreation,
 } from './hisClient';
-import { mock, samples } from './tests';
-import { createSilentLogger, wait } from './tools';
+import { mock, samples, createSilentLogger } from './tests';
+import { Logger, wait } from './tools';
 import {
   MessageLineParser,
   MessageLineParserEventType,
@@ -54,19 +57,26 @@ describe('HIS client', () => {
   let accessoryModeConfigurator: AccessoryModeConfigurator;
   let deviceFinder: DeviceFinder;
   let client: HisClient;
+  let testDirectory: string;
+  let tokenFile: string;
+  let logger: Logger;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     usbReader = new UsbReaderMock();
     messageLineParser = new MessageLineParserMock();
     accessoryModeConfigurator = new AccessoryModeConfiguratorMock();
     deviceFinder = new DeviceFinderMock();
     events = [];
+    testDirectory = await mkdtemp(joinPath(tmpdir(), 'his-'));
+    tokenFile = joinPath(testDirectory, '.token');
+    logger = createSilentLogger();
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     if (client) {
       client.dispose();
     }
+    await rm(testDirectory, { recursive: true });
   });
 
   describe('on data from reader', () => {
@@ -135,6 +145,52 @@ describe('HIS client', () => {
           type: ClientMessageType.pong,
         });
         expect(device.transferOut).toHaveBeenCalledWith(expected);
+      });
+    });
+
+    describe('when start communication succeeded is received', () => {
+      it('should store token if provided', async () => {
+        await connectToDeviceInAccessoryMode();
+
+        messageLineParser.emit(MessageLineParserEventType.message, {
+          type: ServerMessageType.startCommunicationSucceeded,
+          payload: { token: 'x24' },
+        });
+
+        await wait(50);
+        const content = await readFile(tokenFile, { encoding: 'utf-8' });
+        expect(content).toEqual('x24');
+      });
+
+      it("won't try to store token if not provided", async () => {
+        await connectToDeviceInAccessoryMode();
+
+        messageLineParser.emit(MessageLineParserEventType.message, {
+          type: ServerMessageType.startCommunicationSucceeded,
+        });
+
+        await wait(50);
+        await expect(access(tokenFile)).rejects.toThrow(/ENOENT/);
+      });
+
+      it('should emit error when token cannot be stored', async () => {
+        await mkdir(tokenFile);
+        await connectToDeviceInAccessoryMode();
+
+        messageLineParser.emit(MessageLineParserEventType.message, {
+          type: ServerMessageType.startCommunicationSucceeded,
+          payload: { token: 'x24' },
+        });
+
+        await wait(50);
+        expect(logger.error).toHaveBeenCalledWith(
+          'Error while storing token',
+          expect.anything()
+        );
+        expect(events).toContainEqual([
+          ClientEventType.error,
+          expect.anything(),
+        ]);
       });
     });
   });
@@ -351,6 +407,59 @@ describe('HIS client', () => {
     });
   });
 
+  describe('on start communication', () => {
+    it('should write such message with stored token when present', async () => {
+      await writeFile(tokenFile, 'x24');
+      const device = await connectToDeviceInAccessoryMode();
+
+      await client.startCommunication();
+
+      const message = {
+        type: ClientMessageType.startCommunication,
+        payload: { token: 'x24' },
+      };
+      const expected = serializeMessage(message);
+      expect(device.transferOut).toHaveBeenCalledWith(expected);
+    });
+
+    it('should write such message without any token when none is stored', async () => {
+      const device = await connectToDeviceInAccessoryMode();
+
+      await client.startCommunication();
+
+      const message = {
+        type: ClientMessageType.startCommunication,
+      };
+      const expected = serializeMessage(message);
+      expect(device.transferOut).toHaveBeenCalledWith(expected);
+    });
+
+    it('should emit errors while reading token which are not existence related', async () => {
+      await mkdir(tokenFile);
+      await connectToDeviceInAccessoryMode();
+
+      await client.startCommunication();
+
+      expect(logger.error).toHaveBeenCalledWith(
+        'Unexpected error while reading token',
+        expect.anything()
+      );
+      expect(events).toContainEqual([ClientEventType.error, expect.anything()]);
+    });
+
+    it("won't log any existence related error while reading token", async () => {
+      await connectToDeviceInAccessoryMode();
+
+      await client.startCommunication();
+
+      expect(logger.error).not.toHaveBeenCalled();
+      expect(events).not.toContainEqual([
+        ClientEventType.error,
+        expect.anything(),
+      ]);
+    });
+  });
+
   async function connectToDeviceInAccessoryMode(): Promise<UsbDevice> {
     const device = mockToFindDeviceInAccessoryMode();
     createClient();
@@ -375,10 +484,11 @@ describe('HIS client', () => {
           deviceFinder,
           usbReader,
           accessoryConfigurator: accessoryModeConfigurator,
-          logger: createSilentLogger(),
+          logger,
           messageLineParser: messageLineParser,
           inTimeoutMs: 0,
           outTimeoutMs: 0,
+          tokenFile,
         },
         creation
       )
