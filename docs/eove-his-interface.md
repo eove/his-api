@@ -114,7 +114,7 @@ Here is an extract:
 }
 ```
 
-Given the descriptor `hisapi_v0.9.0-32.2_eo150_en-EN.json` (see https://github.com/eove/his-api/tree/master/docs/descriptors/hisapi_v0.9.0-32.2_eo150_en-EN.json) client can read `MON_VTI_u` description which is actually "VTI" monitoring and unit is "UNIT_ML" which corresponds to "mL".
+Given the descriptor `hisapi_v1.0.0-32.2_eo150_en-EN.json` (see https://github.com/eove/his-api/tree/master/docs/descriptors/hisapi_v1.0.0-32.2_eo150_en-EN.json) client can read `MON_VTI_u` description which is actually "VTI" monitoring and unit is "UNIT_ML" which corresponds to "mL".
 
 A descriptor filename is composed of `hisapi_v<his api version>-<module api version>_<product type>_<locale>.json`.
 Most of these information can be retrieved with [GET_INFORMATION message](#get_information-message) and its `GET_INFORMATION_SUCCEEDED` response.
@@ -125,7 +125,7 @@ Here is an extract:
 {
   "type": "GET_INFORMATION_SUCCEEDED",
   "payload": {
-    "apiVersion": "0.9.0",
+    "apiVersion": "1.0.0",
     "product": { "type": "eo150" },
     "module": {
       "apiVersion": "32.2"
@@ -432,7 +432,7 @@ Client reads:
 {
   "type": "GET_INFORMATION_SUCCEEDED",
   "payload": {
-    "apiVersion": "0.9.0",
+    "apiVersion": "1.0.0",
     "product": { "type": "eo150" },
     "module": {
       "type": "vm150",
