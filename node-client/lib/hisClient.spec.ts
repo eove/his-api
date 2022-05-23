@@ -331,6 +331,37 @@ describe('HIS client', () => {
       expect(device.close).toHaveBeenCalled();
     });
 
+    it('should try closing device another time after a failure', async () => {
+      const device = await connectToDeviceInAccessoryMode();
+      device.close = jest.fn().mockRejectedValueOnce(new Error('buzy'));
+
+      await client.disconnect();
+
+      expect(device.close).toHaveBeenCalledTimes(2);
+    });
+
+    it('should try closing device another time after waiting in timeout delay', async () => {
+      const device = await connectToDeviceInAccessoryMode({ inTimeoutMs: 100 });
+      device.close = jest.fn().mockRejectedValueOnce(new Error('buzy'));
+
+      client.disconnect();
+
+      await wait(50);
+      expect(device.close).toHaveBeenCalledTimes(1);
+
+      await wait(100);
+      expect(device.close).toHaveBeenCalledTimes(2);
+    });
+
+    it("won't try closing device endlessly after repeated failures", async () => {
+      const device = await connectToDeviceInAccessoryMode();
+      device.close = jest.fn().mockRejectedValue(new Error('buzy'));
+
+      await client.disconnect();
+
+      expect(device.close).toHaveBeenCalledTimes(2);
+    });
+
     it('should stop reader', async () => {
       await connectToDeviceInAccessoryMode();
 
@@ -460,9 +491,11 @@ describe('HIS client', () => {
     });
   });
 
-  async function connectToDeviceInAccessoryMode(): Promise<UsbDevice> {
+  async function connectToDeviceInAccessoryMode(
+    creation: Partial<HisClientCreation> = {}
+  ): Promise<UsbDevice> {
     const device = mockToFindDeviceInAccessoryMode();
-    createClient();
+    createClient(creation);
     await client.connect();
     return device;
   }

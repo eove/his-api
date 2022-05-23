@@ -54,6 +54,5 @@ async function main(): Promise<void> {
     await wait(1000);
     await client.disconnect();
     client.dispose();
-    process.exit();
   }
 }

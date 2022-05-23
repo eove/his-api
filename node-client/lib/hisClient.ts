@@ -19,7 +19,7 @@ import {
   AccessoryModeConfigurator,
   FoundDevice,
 } from './usb';
-import { Logger } from './tools';
+import { Logger, wait } from './tools';
 
 export interface HisClientCreation {
   accessoryConfigurator: AccessoryModeConfigurator;
@@ -246,11 +246,23 @@ export class HisClient extends EventEmitter {
   }
 
   private async disconnectSilently() {
-    if (this.device) {
-      await this.device.close().catch(() => undefined);
-    }
     this.usbReader.stop();
+    await this.closeDevice();
     this.device = undefined;
     this.emit(ClientEventType.disconnected);
+  }
+
+  private async closeDevice(): Promise<void> {
+    for (let i = 0; i < 2; i++) {
+      try {
+        if (!this.device) {
+          return;
+        }
+        await this.device.close();
+      } catch (error) {
+        this.logger.debug('Impossible to close device for now');
+        await wait(this.timeouts.in);
+      }
+    }
   }
 }
