@@ -226,9 +226,7 @@ export class HisClient extends EventEmitter {
       throw new Error('Impossible to write because we are not connected');
     }
     try {
-      this.usbReader.pause();
       await this.device.transferOut(bytes);
-      this.usbReader.resume();
     } catch (error) {
       this.logger.error('Impossible to write so forcing disconnection');
       await this.disconnectSilently();

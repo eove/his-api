@@ -30,8 +30,6 @@ const UsbReaderMock = mock<UsbReader>(() =>
   Object.assign(new EventEmitter() as any, {
     start: jest.fn(),
     stop: jest.fn(),
-    pause: jest.fn(),
-    resume: jest.fn(),
   })
 );
 
@@ -386,24 +384,6 @@ describe('HIS client', () => {
       await client.write(Buffer.from([1]));
 
       expect(device.transferOut).toHaveBeenCalledWith(Buffer.from([1]));
-    });
-
-    it('should pause reader, write then resume reader', async () => {
-      const calls: string[] = [];
-      const device = await connectToDeviceInAccessoryMode();
-      device.transferOut = jest
-        .fn()
-        .mockImplementation(async () => calls.push('transferOut'));
-      usbReader.pause = jest
-        .fn()
-        .mockImplementation(async () => calls.push('pause'));
-      usbReader.resume = jest
-        .fn()
-        .mockImplementation(async () => calls.push('resume'));
-
-      await client.write(Buffer.from([1]));
-
-      expect(calls).toEqual(['pause', 'transferOut', 'resume']);
     });
 
     it('should reject when no device is connected', () => {
