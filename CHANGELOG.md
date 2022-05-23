@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Client closes device correctly which allows Node.JS process to end
 
+#### Technical stuff
+
+- USB reader is not paused anymore while client writes to device because `usb` dependency does not use a semaphore anymore
+
 ## 1.0.1 - 2022-05-20
 
 ### node-client
