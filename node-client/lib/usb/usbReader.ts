@@ -33,16 +33,6 @@ export class UsbReader extends EventEmitter {
   start(device: UsbDevice): void {
     this.logger.debug('Reading from USB device');
     this.device = device;
-    this.resume();
-  }
-
-  stop(): void {
-    this.logger.debug('No more reading from USB device');
-    this.pause();
-    this.device = undefined;
-  }
-
-  resume(): void {
     setImmediate(async () => {
       if (this.running) {
         return;
@@ -55,8 +45,10 @@ export class UsbReader extends EventEmitter {
     });
   }
 
-  pause(): void {
+  stop(): void {
+    this.logger.debug('No more reading from USB device');
     this.running = false;
+    this.device = undefined;
   }
 
   private async read(device: UsbDevice): Promise<void> {

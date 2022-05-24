@@ -30,8 +30,6 @@ const UsbReaderMock = mock<UsbReader>(() =>
   Object.assign(new EventEmitter() as any, {
     start: jest.fn(),
     stop: jest.fn(),
-    pause: jest.fn(),
-    resume: jest.fn(),
   })
 );
 
@@ -331,6 +329,37 @@ describe('HIS client', () => {
       expect(device.close).toHaveBeenCalled();
     });
 
+    it('should try closing device another time after a failure', async () => {
+      const device = await connectToDeviceInAccessoryMode();
+      device.close = jest.fn().mockRejectedValueOnce(new Error('buzy'));
+
+      await client.disconnect();
+
+      expect(device.close).toHaveBeenCalledTimes(2);
+    });
+
+    it('should try closing device another time after waiting in timeout delay', async () => {
+      const device = await connectToDeviceInAccessoryMode({ inTimeoutMs: 100 });
+      device.close = jest.fn().mockRejectedValueOnce(new Error('buzy'));
+
+      client.disconnect();
+
+      await wait(50);
+      expect(device.close).toHaveBeenCalledTimes(1);
+
+      await wait(100);
+      expect(device.close).toHaveBeenCalledTimes(2);
+    });
+
+    it("won't try closing device endlessly after repeated failures", async () => {
+      const device = await connectToDeviceInAccessoryMode();
+      device.close = jest.fn().mockRejectedValue(new Error('buzy'));
+
+      await client.disconnect();
+
+      expect(device.close).toHaveBeenCalledTimes(2);
+    });
+
     it('should stop reader', async () => {
       await connectToDeviceInAccessoryMode();
 
@@ -355,24 +384,6 @@ describe('HIS client', () => {
       await client.write(Buffer.from([1]));
 
       expect(device.transferOut).toHaveBeenCalledWith(Buffer.from([1]));
-    });
-
-    it('should pause reader, write then resume reader', async () => {
-      const calls: string[] = [];
-      const device = await connectToDeviceInAccessoryMode();
-      device.transferOut = jest
-        .fn()
-        .mockImplementation(async () => calls.push('transferOut'));
-      usbReader.pause = jest
-        .fn()
-        .mockImplementation(async () => calls.push('pause'));
-      usbReader.resume = jest
-        .fn()
-        .mockImplementation(async () => calls.push('resume'));
-
-      await client.write(Buffer.from([1]));
-
-      expect(calls).toEqual(['pause', 'transferOut', 'resume']);
     });
 
     it('should reject when no device is connected', () => {
@@ -460,9 +471,11 @@ describe('HIS client', () => {
     });
   });
 
-  async function connectToDeviceInAccessoryMode(): Promise<UsbDevice> {
+  async function connectToDeviceInAccessoryMode(
+    creation: Partial<HisClientCreation> = {}
+  ): Promise<UsbDevice> {
     const device = mockToFindDeviceInAccessoryMode();
-    createClient();
+    createClient(creation);
     await client.connect();
     return device;
   }
