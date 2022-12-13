@@ -12,7 +12,7 @@ npm install @eove/his-node-client --save
 ## Configuration on Windows
 
 Windows requires to install Windows Accessory Drivers Interface and USB drivers.
-Easier way is to use [zadig](https://github.com/pbatard/libwdi/wiki/Zadig) tools on Windows.
+Easiest way is to use [zadig](https://github.com/pbatard/libwdi/wiki/Zadig) tools on Windows. Lastest release is avalaible [here](https://github.com/pbatard/libwdi/releases).
 
 ## Usage
 
