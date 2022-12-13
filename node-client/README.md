@@ -9,6 +9,11 @@ Node.JS client to connect to an EOVE device exposing HIS features
 npm install @eove/his-node-client --save
 ```
 
+## Configuration on Windows
+
+Windows requires to install Windows Accessory Drivers Interface and USB drivers.
+Easier way is to use [zadig](https://github.com/pbatard/libwdi/wiki/Zadig) tools on Windows.
+
 ## Usage
 
 ```js
